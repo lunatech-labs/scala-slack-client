@@ -7,9 +7,6 @@ import play.api.libs.json._
 import play.api.libs.ws.JsonBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
-import scala.concurrent.Await
-import scala.concurrent.duration.Duration
-
 class SlackClient(token: String) {
   implicit val basicFieldFormat = Json.format[BasicField]
   implicit val optionFieldFormat = Json.format[OptionField]
@@ -31,9 +28,9 @@ class SlackClient(token: String) {
 
   def postMessage(channel: String, text: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
                   iconEmoji: Option[String] = None, iconUrl: Option[String] = None, linkNames: Option[String] = None,
-                  mrkdwn : Option[Boolean] = None, parse: Option[String] = None, replyBroadcast: Option[Boolean] = None,
+                  mrkdwn: Option[Boolean] = None, parse: Option[String] = None, replyBroadcast: Option[Boolean] = None,
                   threadTs: Option[String] = None, unfurlLinks: Option[Boolean] = None, unfurlMedia: Option[Boolean] = None,
-                  username: Option[String] = None) ={
+                  username: Option[String] = None) = {
     makeApiCall(system.settings.config.getString("slack.api.postMessage"),
       Json.obj(
         "channel" -> channel,
@@ -57,7 +54,7 @@ class SlackClient(token: String) {
     wsClient.url(url)
       .withHttpHeaders(
         "Content-Type" -> "application/json",
-        "Authorization"-> s"Bearer $token")
+        "Authorization" -> s"Bearer $token")
       .post(body)
   }
 }

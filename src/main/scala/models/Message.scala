@@ -1,5 +1,8 @@
 package models
 
+import com.fasterxml.jackson.core.{JsonParseException, JsonParser}
+import play.api.libs.json.{JsResult, JsValue, Json}
+
 case class Payload(
                     `type`: String,
                     actions: Seq[ActionsField],
@@ -16,6 +19,29 @@ case class Payload(
                     response_url: String,
                     trigger_id: String
                   )
+
+object Payload {
+  implicit val basicFieldFormat = Json.format[BasicField]
+  implicit val optionFieldFormat = Json.format[OptionField]
+  implicit val optionGroupsFieldFormat = Json.format[OptionGroupsField]
+  implicit val nameFieldFormat = Json.format[NameField]
+  implicit val confirmFieldFormat = Json.format[ConfirmField]
+  implicit val teamFieldFormat = Json.format[TeamField]
+  implicit val selectedFieldFormat = Json.format[SelectedOption]
+  implicit val actionFieldFormat = Json.format[ActionField]
+  implicit val actionsFieldFormat = Json.format[ActionsField]
+  implicit val attachmentFieldFormat = Json.format[AttachmentField]
+  implicit val originalMessageFormat = Json.format[Message]
+  implicit val payloadFormat = Json.format[Payload]
+
+  def getPayload(payload: String): Payload = {
+    val jsonPayload: JsValue = Json.parse(payload)
+
+    val payloadFromJson: JsResult[Payload] = Json.fromJson[Payload](jsonPayload)
+
+    payloadFromJson.getOrElse(throw new JsonParseException(null, "Bad payload format"))
+  }
+}
 
 case class ActionsField(
                          name: String,
