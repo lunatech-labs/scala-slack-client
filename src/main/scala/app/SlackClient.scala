@@ -8,19 +8,6 @@ import play.api.libs.ws.JsonBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 class SlackClient(token: String) {
-  implicit val basicFieldFormat = Json.format[BasicField]
-  implicit val optionFieldFormat = Json.format[OptionField]
-  implicit val optionGroupsFieldFormat = Json.format[OptionGroupsField]
-  implicit val nameFieldFormat = Json.format[NameField]
-  implicit val confirmFieldFormat = Json.format[ConfirmField]
-  implicit val teamFieldFormat = Json.format[TeamField]
-  implicit val selectedFieldFormat = Json.format[SelectedOption]
-  implicit val actionFieldFormat = Json.format[ActionField]
-  implicit val actionsFieldFormat = Json.format[ActionsField]
-  implicit val attachmentFieldFormat = Json.format[AttachmentField]
-  implicit val originalMessageFormat = Json.format[Message]
-  implicit val payloadFormat = Json.format[Payload]
-
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
 
