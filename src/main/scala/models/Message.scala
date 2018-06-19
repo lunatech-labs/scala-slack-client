@@ -1,7 +1,8 @@
 package models
 
-import com.fasterxml.jackson.core.JsonParseException
-import play.api.libs.json.{JsResult, JsValue, Json}
+import play.api.libs.json._
+
+import scala.util.{Failure, Success, Try}
 
 case class Payload(
                     `type`: String,
@@ -21,12 +22,17 @@ case class Payload(
                   )
 
 object Payload {
-  def getPayload(payload: String): Payload = {
+  def getPayload(payload: String): Try[Payload] = {
     val jsonPayload: JsValue = Json.parse(payload)
 
-    val payloadFromJson: JsResult[Payload] = Json.fromJson[Payload](jsonPayload)
+    val payloadFromJson = Json.fromJson[Payload](jsonPayload)
 
-    payloadFromJson.getOrElse(throw new JsonParseException(null, "Bad payload format"))
+    payloadFromJson match {
+      case payload: JsSuccess[Payload] =>
+        Success(payload.value)
+      case error: JsError =>
+        Failure(new Exception("Payload has not a correct json format"))
+    }
   }
 }
 

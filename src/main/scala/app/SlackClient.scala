@@ -74,6 +74,25 @@ class SlackClient(token: String) {
       ))
   }
 
+  def meMessage(channel: String, text: String) = {
+    makeApiCall(system.settings.config.getString("slack.api.meMessage"),
+      Json.obj(
+        "channel" -> channel,
+        "text" -> text
+      ))
+  }
+
+  def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
+                  limit: Option[Int] = None) = {
+    makeApiCall(system.settings.config.getString("slack.api.channelList"),
+      Json.obj(
+        "cursor" -> cursor,
+        "exclude_archived" -> excludeArchived,
+        "exclude_members" -> excludeMembers,
+        "limit" -> limit
+      ))
+  }
+
   private def makeApiCall(url: String, body: JsValue) = {
     wsClient.url(url)
       .withHttpHeaders(

@@ -6,6 +6,7 @@ import play.api.libs.json._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
+import scala.util.{Success, Try}
 
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
@@ -119,16 +120,30 @@ class ClientTest extends FunSuite {
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
 
+  test("Slack client should return a list of all channels") {
+    val response = Await.result(client.channelList(), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send a meMessage") {
+    val response = Await.result(client.meMessage(channel, "This is a meMessage"), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
   test("Get payload from string") {
     val actionsField: ActionsField = ActionsField("channels_list", "select", Seq(SelectedOption("CB892TULE")))
     val teamField: TeamField = TeamField("TB6N9RP9U", "testbotratp")
     val channelField: NameField = NameField("DB6CTE1C4", "directmessage")
-    val userField: NameField = NameField("UB6NJCXV4", "kevin.istria")
+    val userField: NameField = NameField("usertoken", "username")
     val actionField: ActionField = ActionField("channels_list", "Which channel changed your life this week?", "select", Some("1"), None, None, None, Some("channels"))
     val attachmentField = AttachmentField("Upgrade your Slack client to use messages like these.", "select_simple_1234", Seq(actionField), None, None, Some(1), Some("3AA3E3"))
     val originalMessage: Message = Message(Some("It's time to nominate the channel of the week"), Some(Seq(attachmentField)), None, None, Some("BB6PGS69K"), None, Some("message"), Some("UB5UAJ3QQ"), None, Some("1529179457.000037"))
     val payloadModel: Payload = Payload("interactive_message", Seq(actionsField), "select_simple_1234", teamField, channelField, userField, "1529179458.902979",
-      "1529179457.000037", "1", "16OrJuAdtPKF5eygKkjOIZxx", false, originalMessage, "https://hooks.slack.com/actions/TB6N9RP9U/382786945779/hWJvPj6HxTSS2g0W5N02cNN3", "382190469344.380757873334.33143879afb834e456aabe7231562727")
+      "1529179457.000037", "1", "16OrJuAdtPKF5eygKkjOIZxx", false, originalMessage, "https://hooks.slack.com/actions/TB6NDSQFD", "382190469344.380757873334.331")
     val payload =
       """
         |{
@@ -150,8 +165,8 @@ class ClientTest extends FunSuite {
         |		"name": "directmessage"
         |	},
         |	"user": {
-        |		"id": "UB6NJCXV4",
-        |		"name": "kevin.istria"
+        |		"id": "usertoken",
+        |		"name": "username"
         |	},
         |	"action_ts": "1529179458.902979",
         |	"message_ts": "1529179457.000037",
@@ -178,13 +193,14 @@ class ClientTest extends FunSuite {
         |		}],
         |		"ts": "1529179457.000037"
         |	},
-        |	"response_url": "https://hooks.slack.com/actions/TB6N9RP9U/382786945779/hWJvPj6HxTSS2g0W5N02cNN3",
-        |	"trigger_id": "382190469344.380757873334.33143879afb834e456aabe7231562727"
+        |	"response_url": "https://hooks.slack.com/actions/TB6NDSQFD",
+        |	"trigger_id": "382190469344.380757873334.331"
         |}
       """.stripMargin
 
-    val payloadFromJson: Payload = Payload.getPayload(payload)
-    assert(payloadFromJson == payloadModel)
+    val payloadFromJson: Try[Payload] = Payload.getPayload(payload)
+    assert(payloadFromJson.isSuccess)
+    assert(payloadFromJson.get == payloadModel)
   }
 
 }
