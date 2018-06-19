@@ -2,6 +2,7 @@ import akka.actor.ActorSystem
 import app.SlackClient
 import models._
 import org.scalatest.FunSuite
+import play.api.libs.json._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
@@ -9,16 +10,91 @@ import scala.concurrent.duration.Duration
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
 
-  test("Slack client should send a message to a channel") {
-    val token = system.settings.config.getString("test.token")
-    val channel = system.settings.config.getString("test.channel")
+  val token = system.settings.config.getString("test.token")
+  val channel = system.settings.config.getString("test.channel")
 
-    println(token)
-    println(channel)
-
+  test("Slack client should send a message to a channel with buttons") {
     val client = new SlackClient(token)
 
-    assert(Await.result(client.postMessage(channel, "This is a message"), Duration.create(20, "s")).status == 200)
+    val attachment = AttachmentField("upgrade your client api", "action_test",
+      List(ActionField.getDangerButton("Danger button", "Danger").withConfirmation("Are you sure ?"),
+        ActionField.getPrimaryButton("Primary button", "Primary"),
+        ActionField.getDefaultButton("Default button", "Default")))
+
+    val response = Await.result(
+      client.postMessage(channel, "This is a message with buttons", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+    )
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send a message to a channel with a menu") {
+    val client = new SlackClient(token)
+
+    val attachment = AttachmentField("upgrade your client api", "action_test",
+      List(ActionField
+        .getStaticMenu("Menu", "The menu", List(BasicField("First item", "First item"), BasicField("Second Item", "Second Item")))
+        .withConfirmation("Are you sure ?")
+      )
+    )
+
+    val response = Await.result(
+      client.postMessage(channel, "This is a message with a menu", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+    )
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send a message to a channel with a menu listing users") {
+    val client = new SlackClient(token)
+
+    val attachment = AttachmentField("upgrade your client api", "action_test",
+      List(ActionField
+        .getUserMenu("User menu", "Users")
+      )
+    )
+
+    val response = Await.result(
+      client.postMessage(channel, "This is a message with a menu listing users", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+    )
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send a message to a channel with a menu listing channels") {
+    val client = new SlackClient(token)
+
+    val attachment = AttachmentField("upgrade your client api", "action_test",
+      List(ActionField
+        .getChannelMenu("Channels menu", "Channels")
+      )
+    )
+
+    val response = Await.result(
+      client.postMessage(channel, "This is a message with a menu listing channels", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+    )
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send a message to a channel with a menu listing conversations") {
+    val client = new SlackClient(token)
+
+    val attachment = AttachmentField("upgrade your client api", "action_test",
+      List(ActionField
+        .getConversationMenu("Channels menu", "Converations")
+      )
+    )
+
+    val response = Await.result(
+      client.postMessage(channel, "This is a message with a menu listing converations", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+    )
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
 
   test("Get payload from string") {

@@ -87,7 +87,16 @@ case class ActionField(
                         option_groups: Option[Seq[OptionGroupsField]] = None,
                         min_query_length: Option[Int] = None,
                         selected_options: Option[Seq[OptionField]] = None
-                      )
+                      ) {
+
+  def withConfirmation(confirmField: ConfirmField): ActionField = {
+    ActionField(name, text, `type`, id, value, Some(confirmField), style, data_source, options, option_groups, min_query_length, selected_options)
+  }
+
+  def withConfirmation(text: String, title: Option[String] = None, ok_text: Option[String] = None, dismiss_text: Option[String] = None): ActionField = {
+    withConfirmation(ConfirmField(text, title, ok_text, dismiss_text))
+  }
+}
 
 case class Message(
                     text: Option[String] = None,
@@ -124,3 +133,83 @@ case class BasicField(
                        value: String,
                        description: Option[String] = None
                      )
+
+object ActionField {
+  def getDefaultButton(name: String,
+                       text: String,
+                       id: Option[String] = None,
+                       value: Option[String] = None,
+                       confirm: Option[ConfirmField] = None): ActionField = {
+
+    ActionField(name, text, "button", id, value, confirm, Some("default"))
+  }
+
+  def getPrimaryButton(name: String,
+                       text: String,
+                       id: Option[String] = None,
+                       value: Option[String] = None,
+                       confirm: Option[ConfirmField] = None): ActionField = {
+
+    ActionField(name, text, "button", id, value, confirm, Some("primary"))
+  }
+
+  def getDangerButton(name: String,
+                      text: String,
+                      id: Option[String] = None,
+                      value: Option[String] = None,
+                      confirm: Option[ConfirmField] = None): ActionField = {
+
+    ActionField(name, text, "button", id, value, confirm, Some("danger"))
+  }
+
+  def getStaticMenu(name: String,
+                    text: String,
+                    fields: Seq[BasicField],
+                    id: Option[String] = None,
+                    value: Option[String] = None,
+                    confirm: Option[ConfirmField] = None,
+                    selected_options: Option[Seq[OptionField]] = None): ActionField = {
+
+    ActionField(name, text, "select", id, value, confirm, None, None, Some(fields), None, None, selected_options)
+  }
+
+  def getUserMenu(name: String,
+                  text: String,
+                  id: Option[String] = None,
+                  value: Option[String] = None,
+                  confirm: Option[ConfirmField] = None,
+                  selected_options: Option[Seq[OptionField]] = None): ActionField = {
+
+    ActionField(name, text, "select", id, value, confirm, None, Some("users"), None, None, None, selected_options)
+  }
+
+  def getChannelMenu(name: String,
+                     text: String,
+                     id: Option[String] = None,
+                     value: Option[String] = None,
+                     confirm: Option[ConfirmField] = None,
+                     selected_options: Option[Seq[OptionField]] = None): ActionField = {
+
+    ActionField(name, text, "select", id, value, confirm, None, Some("channels"), None, None, None, selected_options)
+  }
+
+  def getConversationMenu(name: String,
+                          text: String,
+                          id: Option[String] = None,
+                          value: Option[String] = None,
+                          confirm: Option[ConfirmField] = None,
+                          selected_options: Option[Seq[OptionField]] = None): ActionField = {
+
+    ActionField(name, text, "select", id, value, confirm, None, Some("conversations"), None, None, None, selected_options)
+  }
+
+  def getExternalMenu(name: String,
+                      text: String,
+                      id: Option[String] = None,
+                      value: Option[String] = None,
+                      confirm: Option[ConfirmField] = None,
+                      minQueryLength: Option[Int] = None,
+                      selected_options: Option[Seq[OptionField]] = None): ActionField = {
+    ActionField(name, text, "select", id, value, confirm, None, Some("external"), None, None, minQueryLength, selected_options)
+  }
+}
