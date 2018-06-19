@@ -50,6 +50,43 @@ class SlackClient(token: String) {
       ))
   }
 
+  def postEphemeral(channel: String, text: String, user: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
+                    linkNames: Option[Boolean] = None, parse: Option[String] = None) = {
+    makeApiCall(system.settings.config.getString("slack.api.postEphemeral"),
+      Json.obj(
+        "channel" -> channel,
+        "text" -> text,
+        "user" -> user,
+        "as_user" -> asUser,
+        "attachments" -> attachments,
+        "link_names" -> linkNames,
+        "parse" -> parse
+      ))
+  }
+
+  def deleteMessage(channel: String, ts: String, asUser: Option[Boolean] = None) = {
+    makeApiCall(system.settings.config.getString("slack.api.deleteMessage"),
+      Json.obj(
+        "channel" -> channel,
+        "ts" -> ts,
+        "as_user" -> asUser,
+      ))
+  }
+
+  def updateMessage(channel: String, text: String, ts: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
+                    linkNames: Option[Boolean] = None, parse: Option[String] = None) = {
+    makeApiCall(system.settings.config.getString("slack.api.updateMessage"),
+      Json.obj(
+        "channel" -> channel,
+        "text" -> text,
+        "ts" -> ts,
+        "as_user" -> asUser,
+        "attachments" -> attachments,
+        "link_names" -> linkNames,
+        "parse" -> parse
+      ))
+  }
+
   private def makeApiCall(url: String, body: JsValue) = {
     wsClient.url(url)
       .withHttpHeaders(

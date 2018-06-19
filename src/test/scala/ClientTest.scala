@@ -10,12 +10,24 @@ import scala.concurrent.duration.Duration
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
 
-  val token = system.settings.config.getString("test.token")
-  val channel = system.settings.config.getString("test.channel")
+  private val token = system.settings.config.getString("test.token")
+  private val channel = system.settings.config.getString("test.channel")
+  private val userId = system.settings.config.getString("test.userId")
+  private val client = new SlackClient(token)
+
+  test("Slack client should send a message to a channel") {
+    val response = Await.result(client.postMessage(channel, "This is a message"), Duration.create(20, "s"))
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should send an ephemeral message to a channel") {
+    val response = Await.result(client.postEphemeral(channel, "This is an ephemeral message", userId), Duration.create(20, "s"))
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
 
   test("Slack client should send a message to a channel with buttons") {
-    val client = new SlackClient(token)
-
     val attachment = AttachmentField("upgrade your client api", "action_test",
       List(ActionField.getDangerButton("Danger button", "Danger").withConfirmation("Are you sure ?"),
         ActionField.getPrimaryButton("Primary button", "Primary"),
@@ -30,8 +42,6 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with a menu") {
-    val client = new SlackClient(token)
-
     val attachment = AttachmentField("upgrade your client api", "action_test",
       List(ActionField
         .getStaticMenu("Menu", "The menu", List(BasicField("First item", "First item"), BasicField("Second Item", "Second Item")))
@@ -48,8 +58,6 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with a menu listing users") {
-    val client = new SlackClient(token)
-
     val attachment = AttachmentField("upgrade your client api", "action_test",
       List(ActionField
         .getUserMenu("User menu", "Users")
@@ -65,8 +73,6 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with a menu listing channels") {
-    val client = new SlackClient(token)
-
     val attachment = AttachmentField("upgrade your client api", "action_test",
       List(ActionField
         .getChannelMenu("Channels menu", "Channels")
@@ -82,8 +88,6 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
-    val client = new SlackClient(token)
-
     val attachment = AttachmentField("upgrade your client api", "action_test",
       List(ActionField
         .getConversationMenu("Channels menu", "Converations")
@@ -93,6 +97,24 @@ class ClientTest extends FunSuite {
     val response = Await.result(
       client.postMessage(channel, "This is a message with a menu listing converations", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should delete a message") {
+    val sendMessage = Await.result(client.postMessage(channel, "This message should be deleted"), Duration.create(20, "s"))
+    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val response = Await.result(client.deleteMessage(channel, ts), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should update a message") {
+    val sendMessage = Await.result(client.postMessage(channel, "This message should be updated"), Duration.create(20, "s"))
+    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val response = Await.result(client.updateMessage(channel, "Message has been updated", ts), Duration.create(20, "s"))
+
     assert(response.status == 200)
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
