@@ -29,10 +29,10 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with buttons") {
-    val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField.getDangerButton("Danger button", "Danger").withConfirmation("Are you sure ?"),
-        ActionField.getPrimaryButton("Primary button", "Primary"),
-        ActionField.getDefaultButton("Default button", "Default")))
+    val attachment = AttachmentField("upgrade your client api", "action_test")
+      .addAction(ActionField("Default button", "Default"))
+      .addAction(ActionField("Primary button", "Primary").asPrimaryButton)
+      .addAction(ActionField("Danger button", "Danger").asDangerButton.withConfirmation("Are you sure ?"))
 
     val response = Await.result(
       client.postMessage(channel, "This is a message with buttons", attachments = Some(Seq(attachment))), Duration.create(20, "s")
@@ -42,12 +42,14 @@ class ClientTest extends FunSuite {
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
 
+  val fields: List[BasicField] = List(
+    BasicField("First item", "First item"),
+    BasicField("Second Item", "Second Item"),
+  )
+
   test("Slack client should send a message to a channel with a menu") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField
-        .getStaticMenu("Menu", "The menu", List(BasicField("First item", "First item"), BasicField("Second Item", "Second Item")))
-        .withConfirmation("Are you sure ?")
-      )
+      List(ActionField("Menu", "The menu").asMenu(fields).withConfirmation("Are you sure ?"))
     )
 
     val response = Await.result(
@@ -60,9 +62,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing users") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField
-        .getUserMenu("User menu", "Users")
-      )
+      List(ActionField("User menu", "Users").asUserMenu())
     )
 
     val response = Await.result(
@@ -75,9 +75,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing channels") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField
-        .getChannelMenu("Channels menu", "Channels")
-      )
+      List(ActionField("Channels menu", "Channels").asChannelMenu())
     )
 
     val response = Await.result(
@@ -90,9 +88,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField
-        .getConversationMenu("Channels menu", "Converations")
-      )
+      List(ActionField("Channels menu", "Converations").asConversationMenu())
     )
 
     val response = Await.result(

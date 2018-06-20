@@ -60,6 +60,12 @@ class SlackClient(token: String) {
       ))
   }
 
+  def openDialog(triggerId: String) = {
+    makeApiCall(system.settings.config.getString("slack.api.openDialog"),
+      Json.obj()
+    )
+  }
+
   def updateMessage(channel: String, text: String, ts: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
                     linkNames: Option[Boolean] = None, parse: Option[String] = None) = {
     makeApiCall(system.settings.config.getString("slack.api.updateMessage"),
