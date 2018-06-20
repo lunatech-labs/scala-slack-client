@@ -10,7 +10,9 @@ package object models {
   implicit val selectedFieldFormat = Json.format[SelectedOption]
   implicit val actionFieldFormat = Json.format[ActionField]
   implicit val actionsFieldFormat = Json.format[ActionsField]
+  implicit val fieldFormat = Json.format[Field]
   implicit val attachmentFieldFormat = Json.format[AttachmentField]
   implicit val originalMessageFormat = Json.format[Message]
   implicit val payloadFormat = Json.format[Payload]
+  implicit val chatMessageFormat = Json.format[ChatMessage]
 }

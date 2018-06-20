@@ -43,6 +43,10 @@ class SlackClient(token: String) {
       ))
   }
 
+  def postMessage(message: ChatMessage) = {
+    makeApiCall(system.settings.config.getString("slack.api.postMessage"), Json.toJson(message))
+  }
+
   def postEphemeral(channel: String, text: String, user: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
                     linkNames: Option[Boolean] = None, parse: Option[String] = None) = {
     makeApiCall(system.settings.config.getString("slack.api.postEphemeral"),

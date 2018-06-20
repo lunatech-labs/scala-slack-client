@@ -22,6 +22,21 @@ case class Payload(
                     trigger_id: String
                   )
 
+case class Message(
+                    text: Option[String] = None,
+                    attachments: Option[Seq[AttachmentField]],
+                    channel: Option[String] = None,
+                    thread_ts: Option[String] = None,
+                    bot_id: Option[String] = None,
+                    response_type: Option[String] = None,
+                    `type`: Option[String] = None,
+                    user: Option[String] = None,
+                    subtype: Option[String] = None,
+                    ts: Option[String] = None,
+                    replace_original: Option[Boolean] = None,
+                    delete_original: Option[Boolean] = None
+                  )
+
 object Payload {
   def getPayload(payload: String): Try[Payload] = {
     val jsonPayload: JsValue = Json.parse(payload)

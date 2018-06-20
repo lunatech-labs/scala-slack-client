@@ -22,6 +22,21 @@ class ClientTest extends FunSuite {
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
 
+  test("Slack client should send a message to a channel (ChatMessage)") {
+    val message = ChatMessage(channel, "this is a message with ChatMessage")
+      .addAttachment(AttachmentField("update your API", "toto")
+          .addAction(ActionField("Button", "Primary button").asPrimaryButton)
+          .addField(Field("First Field", "firstvalue", short=true))
+          .addField(Field("Seconde Field", "second value", short=true))
+          .addField(Field("Long field", "This is a long field"))
+          .withPretext("This is the pretext")
+          .withText("YOLO")
+      )
+    val response = Await.result(client.postMessage(message), Duration.create(20, "s"))
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
   test("Slack client should send an ephemeral message to a channel") {
     val response = Await.result(client.postEphemeral(channel, "This is an ephemeral message", userId), Duration.create(20, "s"))
     assert(response.status == 200)
@@ -29,6 +44,7 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send a message to a channel with buttons") {
+
     val attachment = AttachmentField("upgrade your client api", "action_test")
       .addAction(ActionField("Default button", "Default"))
       .addAction(ActionField("Primary button", "Primary").asPrimaryButton)
