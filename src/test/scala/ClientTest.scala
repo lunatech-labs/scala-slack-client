@@ -6,7 +6,7 @@ import play.api.libs.json._
 
 import scala.concurrent.Await
 import scala.concurrent.duration.Duration
-import scala.util.{Success, Try}
+import scala.util.Try
 
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
@@ -116,6 +116,15 @@ class ClientTest extends FunSuite {
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }
 
+  test("Slack should return a permalink URL for a specific message") {
+    val sendMessage = Await.result(client.postMessage(channel, "Message to test permalink"), Duration.create(20, "s"))
+    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val response = Await.result(client.getPermalinkMessage(channel, ts), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
   test("Slack client should return a list of all channels") {
     val response = Await.result(client.channelList(), Duration.create(20, "s"))
 
@@ -126,6 +135,40 @@ class ClientTest extends FunSuite {
   test("Slack client should send a meMessage") {
     val response = Await.result(client.meMessage(channel, "This is a meMessage"), Duration.create(20, "s"))
 
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should open a direct message channel") {
+    val response = Await.result(client.imOpen(userId), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should close a direct message channel") {
+    val openChannel = Await.result(client.imOpen(userId, None, Some(true)), Duration.create(20, "s"))
+    val channel = (Json.parse(openChannel.body) \ "channel" \ "id").validate[String].getOrElse("")
+    val response = Await.result(client.imClose(channel), Duration.create(20, "s"))
+
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should return information about a user") {
+    val response = Await.result(client.userInfo(userId), Duration.create(20, "s"))
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should return a list of all users in a slack team") {
+    val response = Await.result(client.usersList(), Duration.create(20, "s"))
+    assert(response.status == 200)
+    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+  }
+
+  test("Slack client should find a user with an email address") {
+    val response = Await.result(client.userLookupByEmail(system.settings.config.getString("test.email")), Duration.create(20, "s"))
     assert(response.status == 200)
     assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
   }

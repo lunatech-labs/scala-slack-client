@@ -13,6 +13,12 @@ class SlackClient(token: String) {
 
   val wsClient = StandaloneAhcWSClient()
 
+  def getPermalinkMessage(channel: String, messageTs: String) = {
+    val params: Map[String, String] = Map("channel" -> channel, "message_ts" -> messageTs)
+
+    makeGetApiCall(system.settings.config.getString("slack.api.getPermalinkMessage"), params)
+  }
+
   def postMessage(channel: String, text: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
                   iconEmoji: Option[String] = None, iconUrl: Option[String] = None, linkNames: Option[String] = None,
                   mrkdwn: Option[Boolean] = None, parse: Option[String] = None, replyBroadcast: Option[Boolean] = None,
@@ -99,11 +105,55 @@ class SlackClient(token: String) {
       ))
   }
 
+  def imClose(channel: String) = {
+    makeApiCall(system.settings.config.getString("slack.api.imClose"),
+      Json.obj(
+        "channel" -> channel
+      ))
+  }
+
+  def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None) = {
+    makeApiCall(system.settings.config.getString("slack.api.imOpen"),
+      Json.obj(
+        "user" -> user,
+        "include_locale" -> includeLocale,
+        "return_im" -> returnIm
+      ))
+  }
+
+  def userInfo(user: String, includeLocale: Option[Boolean] = None) = {
+    val params: Map[String, String] = Map("user" -> user, "include_locale" -> includeLocale.getOrElse(false).toString)
+
+    makeGetApiCall(system.settings.config.getString("slack.api.userInfo"), params)
+  }
+
+  def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None, presence: Option[Boolean] = None) = {
+    val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
+      "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
+
+    makeGetApiCall(system.settings.config.getString("slack.api.usersList"), params)
+  }
+
+  def userLookupByEmail(email: String) = {
+    val params: Map[String, String] = Map("email" -> email)
+
+    makeGetApiCall(system.settings.config.getString("slack.api.userLookupByEmail"), params)
+  }
+
   private def makeApiCall(url: String, body: JsValue) = {
     wsClient.url(url)
       .withHttpHeaders(
         "Content-Type" -> "application/json",
         "Authorization" -> s"Bearer $token")
       .post(body)
+  }
+
+  private def makeGetApiCall(url: String, params: Map[String, String]) = {
+    wsClient.url(url)
+      .withHttpHeaders(
+        "Content-Type" -> "application/json",
+        "Authorization" -> s"Bearer $token")
+      .withQueryStringParameters(params.toSeq: _*)
+      .get()
   }
 }
