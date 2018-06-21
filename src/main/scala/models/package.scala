@@ -1,5 +1,7 @@
 import play.api.libs.json.Json
 
+import scala.util.parsing.json.JSONArray
+
 package object models {
   implicit val basicFieldFormat = Json.format[BasicField]
   implicit val optionFieldFormat = Json.format[OptionField]
@@ -33,4 +35,7 @@ package object models {
   implicit val attachmentResponseFormat = Json.format[AttachmentResponse]
   implicit val embeddedMessageResponseFormat = Json.format[EmbeddedMessageResponse]
   implicit val messageResponseFormat = Json.format[MessageResponse]
+
+  implicit val chatResponseFormat = Json.format[ChatResponse]
+  implicit val permaLinkFormat = Json.format[PermaLink]
 }

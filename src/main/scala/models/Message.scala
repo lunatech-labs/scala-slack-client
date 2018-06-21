@@ -131,6 +131,9 @@ case class MessageResponse(channel: Option[String] = None,
                            ts: Option[String] = None,
                            message: Option[EmbeddedMessageResponse] = None)
 
+case class ChatResponse(channel: Option[String] = None, ts: Option[String] = None, text: Option[String] = None)
+
+
 object ChatMessage {
   def apply(
              channel: String,
