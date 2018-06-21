@@ -102,34 +102,13 @@ class SlackClient(token: String) {
 
   def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
                   limit: Option[Int] = None)(implicit ec: ExecutionContext) = {
-    val response = makeApiCall(system.settings.config.getString("slack.api.channelList"),
+    makeApiCall(system.settings.config.getString("slack.api.channelList"),
       Json.obj(
         "cursor" -> cursor,
         "exclude_archived" -> excludeArchived,
         "exclude_members" -> excludeMembers,
         "limit" -> limit
-      ))
-
-    response.flatMap(result => {
-      val jsonResponse = Json.parse(result.body)
-
-      val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
-
-      if (!ok) {
-        val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
-        Future.failed(new Exception("Error : " + error))
-      }
-      else {
-        val channelListFromJson = Json.fromJson[Channels](jsonResponse)
-
-        channelListFromJson match {
-          case user: JsSuccess[Channels] =>
-            Future.successful(user.value)
-          case error: JsError =>
-            Future.failed(new Exception("Bad json format : " + error))
-        }
-      }
-    })
+      )).flatMap(response => jsonToClass[Channels](response.body))
   }
 
   def imClose(channel: String) = {
@@ -151,87 +130,44 @@ class SlackClient(token: String) {
   def userInfo(user: String, includeLocale: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
     val params: Map[String, String] = Map("user" -> user, "include_locale" -> includeLocale.getOrElse(false).toString)
 
-    val response = makeGetApiCall(system.settings.config.getString("slack.api.userInfo"), params)
-      .map(_.body)
-    jsonToClass[UserInfo](response)
+    makeGetApiCall(system.settings.config.getString("slack.api.userInfo"), params)
+      .flatMap(response => jsonToClass[UserInfo](response.body))
   }
 
-  private def jsonToClass[T](response: Future[String])(implicit ec: ExecutionContext, reads: Reads[T]) = {
-    response.flatMap(body => {
-      val jsonResponse = Json.parse(body)
+  private def jsonToClass[T](response: String)(implicit ec: ExecutionContext, reads: Reads[T]) = {
+    val jsonResponse = Json.parse(response)
 
-      val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
+    val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
 
-      if (!ok) {
-        val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
-        Future.failed(new Exception(s"Error : $error"))
+    if (!ok) {
+      val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
+      Future.failed(new Exception(s"Error : $error"))
+    }
+    else {
+      val fromJson = Json.fromJson[T](jsonResponse)
+
+      fromJson match {
+        case success: JsSuccess[T] =>
+          Future.successful(success.value)
+        case error: JsError =>
+          Future.failed(new Exception(s"Bad json format : $error"))
       }
-      else {
-        val fromJson = Json.fromJson[T](jsonResponse)
-
-        fromJson match {
-          case success: JsSuccess[T] =>
-            Future.successful(success.value)
-          case error: JsError =>
-            Future.failed(new Exception(s"Bad json format : $error"))
-        }
-      }
-    })
+    }
   }
 
   def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None, presence: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
-    val response = makeGetApiCall(system.settings.config.getString("slack.api.usersList"), params)
-
-    response.flatMap(result => {
-      val jsonResponse = Json.parse(result.body)
-
-      val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
-
-      if (!ok) {
-        val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
-        Future.failed(new Exception("Error : " + error))
-      }
-      else {
-        val usersListFromJson = Json.fromJson[UsersList](jsonResponse)
-
-        usersListFromJson match {
-          case user: JsSuccess[UsersList] =>
-            Future.successful(user.value)
-          case error: JsError =>
-            Future.failed(new Exception("Bad json format : " + error))
-        }
-      }
-    })
+    makeGetApiCall(system.settings.config.getString("slack.api.usersList"), params)
+      .flatMap(response => jsonToClass[UsersList](response.body))
   }
 
   def userLookupByEmail(email: String)(implicit ec: ExecutionContext) = {
     val params: Map[String, String] = Map("email" -> email)
 
-    val response = makeGetApiCall(system.settings.config.getString("slack.api.userLookupByEmail"), params)
-
-    response.flatMap(result => {
-      val jsonResponse = Json.parse(result.body)
-
-      val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
-
-      if (!ok) {
-        val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
-        Future.failed(new Exception("Error : " + error))
-      }
-      else {
-        val userFromJson = Json.fromJson[UserInfo](jsonResponse)
-
-        userFromJson match {
-          case user: JsSuccess[UserInfo] =>
-            Future.successful(user.value)
-          case error: JsError =>
-            Future.failed(new Exception("Bad json format : " + error))
-        }
-      }
-    })
+    makeGetApiCall(system.settings.config.getString("slack.api.userLookupByEmail"), params)
+      .flatMap(response => jsonToClass[UserInfo](response.body))
   }
 
   private def makeApiCall(url: String, body: JsValue) = {
