@@ -2,9 +2,11 @@ import akka.actor.ActorSystem
 import app.SlackClient
 import models._
 import org.scalatest.FunSuite
+import org.scalatest.Matchers._
 import play.api.libs.json._
 
 import scala.concurrent.Await
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
 import scala.util.Try
 
@@ -142,10 +144,7 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should return a list of all channels") {
-    val response = Await.result(client.channelList(), Duration.create(20, "s"))
-
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    Await.result(client.channelList(), Duration.create(20, "s")) shouldBe an[Channels]
   }
 
   test("Slack client should send a meMessage") {
@@ -172,21 +171,15 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should return information about a user") {
-    val response = Await.result(client.userInfo(userId), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    Await.result(client.userInfo(userId), Duration.create(20, "s")) shouldBe an[UserInfo]
   }
 
   test("Slack client should return a list of all users in a slack team") {
-    val response = Await.result(client.usersList(), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    Await.result(client.usersList(), Duration.create(20, "s")) shouldBe an[UsersList]
   }
 
   test("Slack client should find a user with an email address") {
-    val response = Await.result(client.userLookupByEmail(system.settings.config.getString("test.email")), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    Await.result(client.userLookupByEmail(system.settings.config.getString("test.email")), Duration.create(20, "s")) shouldBe an[UserInfo]
   }
 
   test("Get payload from string") {
