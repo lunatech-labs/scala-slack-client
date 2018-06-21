@@ -66,7 +66,7 @@ class SlackClient(token: String) {
       )).flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
-  def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Unit ={
+  def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Unit = {
     makeApiCall(system.settings.config.getString("slack.api.postEphemeral"), Json.toJson(chatEphemeral))
       .flatMap(response => jsonToClass[MessageResponse](response.body))
   }
@@ -126,13 +126,26 @@ class SlackClient(token: String) {
       ))
   }
 
-  def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None) = {
-    makeApiCall(system.settings.config.getString("slack.api.imOpen"),
+  def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
+    val response = makeApiCall(system.settings.config.getString("slack.api.imOpen"),
       Json.obj(
         "user" -> user,
         "include_locale" -> includeLocale,
         "return_im" -> returnIm
       ))
+
+    response.flatMap(result => {
+      val jsonResponse = Json.parse(result.body)
+      val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
+
+      if (!ok) {
+        val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
+        Future.failed(new Exception(s"Error : $error"))
+      } else {
+        val channelId = (jsonResponse \ "channel" \ "id").validate[String].getOrElse("")
+        Future.successful(channelId)
+      }
+    })
   }
 
   def userInfo(user: String, includeLocale: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
@@ -143,7 +156,8 @@ class SlackClient(token: String) {
   }
 
 
-  def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None, presence: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
+  def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None
+                , presence: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
