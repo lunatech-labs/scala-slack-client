@@ -9,6 +9,7 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 
 import scala.concurrent.{ExecutionContext, Future}
 
+
 class SlackClient(token: String) {
   implicit val system = ActorSystem()
   implicit val materializer = ActorMaterializer()
@@ -25,7 +26,7 @@ class SlackClient(token: String) {
                   iconEmoji: Option[String] = None, iconUrl: Option[String] = None, linkNames: Option[String] = None,
                   mrkdwn: Option[Boolean] = None, parse: Option[String] = None, replyBroadcast: Option[Boolean] = None,
                   threadTs: Option[String] = None, unfurlLinks: Option[Boolean] = None, unfurlMedia: Option[Boolean] = None,
-                  username: Option[String] = None) = {
+                  username: Option[String] = None)(implicit ec: ExecutionContext) = {
     makeApiCall(system.settings.config.getString("slack.api.postMessage"),
       Json.obj(
         "channel" -> channel,
@@ -43,14 +44,16 @@ class SlackClient(token: String) {
         "unfurl_media" -> unfurlMedia,
         "username" -> username
       ))
+      .flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
-  def postMessage(message: ChatMessage) = {
+  def postMessage(message: ChatMessage)(implicit ec: ExecutionContext) = {
     makeApiCall(system.settings.config.getString("slack.api.postMessage"), Json.toJson(message))
+      .flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
   def postEphemeral(channel: String, text: String, user: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
-                    linkNames: Option[Boolean] = None, parse: Option[String] = None) = {
+                    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext) = {
     makeApiCall(system.settings.config.getString("slack.api.postEphemeral"),
       Json.obj(
         "channel" -> channel,
@@ -60,10 +63,15 @@ class SlackClient(token: String) {
         "attachments" -> attachments,
         "link_names" -> linkNames,
         "parse" -> parse
-      ))
+      )).flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
-  def deleteMessage(channel: String, ts: String, asUser: Option[Boolean] = None) = {
+  def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Unit ={
+    makeApiCall(system.settings.config.getString("slack.api.postEphemeral"), Json.toJson(chatEphemeral))
+      .flatMap(response => jsonToClass[MessageResponse](response.body))
+  }
+
+  def deleteMessage(channel: String, ts: String, asUser: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
     makeApiCall(system.settings.config.getString("slack.api.deleteMessage"),
       Json.obj(
         "channel" -> channel,
@@ -72,7 +80,7 @@ class SlackClient(token: String) {
       ))
   }
 
-  def openDialog(triggerId: String) = {
+  def openDialog(triggerId: String)(implicit ec: ExecutionContext) = {
     makeApiCall(system.settings.config.getString("slack.api.openDialog"),
       Json.obj()
     )
@@ -134,26 +142,6 @@ class SlackClient(token: String) {
       .flatMap(response => jsonToClass[UserInfo](response.body))
   }
 
-  private def jsonToClass[T](response: String)(implicit ec: ExecutionContext, reads: Reads[T]) = {
-    val jsonResponse = Json.parse(response)
-
-    val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
-
-    if (!ok) {
-      val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
-      Future.failed(new Exception(s"Error : $error"))
-    }
-    else {
-      val fromJson = Json.fromJson[T](jsonResponse)
-
-      fromJson match {
-        case success: JsSuccess[T] =>
-          Future.successful(success.value)
-        case error: JsError =>
-          Future.failed(new Exception(s"Bad json format : $error"))
-      }
-    }
-  }
 
   def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None, presence: Option[Boolean] = None)(implicit ec: ExecutionContext) = {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
@@ -186,4 +174,26 @@ class SlackClient(token: String) {
       .withQueryStringParameters(params.toSeq: _*)
       .get()
   }
+
+  private def jsonToClass[T](response: String)(implicit ec: ExecutionContext, reads: Reads[T]) = {
+    val jsonResponse = Json.parse(response)
+
+    val ok = (jsonResponse \ "ok").validate[Boolean].getOrElse(false)
+
+    if (!ok) {
+      val error = (jsonResponse \ "error").validate[String].getOrElse("An error has occurred")
+      Future.failed(new Exception(s"Error : $error"))
+    }
+    else {
+      val fromJson = Json.fromJson[T](jsonResponse)
+
+      fromJson match {
+        case success: JsSuccess[T] =>
+          Future.successful(success.value)
+        case error: JsError =>
+          Future.failed(new Exception(s"Bad json format : $error"))
+      }
+    }
+  }
+
 }

@@ -28,4 +28,9 @@ package object models {
   implicit val channelFormat = Json.format[Channel]
   implicit val channelsFormat = Json.format[Channels]
   implicit val chatMessageFormat = Json.format[ChatMessage]
+  implicit val chatEphemeralFormat = Json.format[ChatEphemeral]
+
+  implicit val attachmentResponseFormat = Json.format[AttachmentResponse]
+  implicit val embeddedMessageResponseFormat = Json.format[EmbeddedMessageResponse]
+  implicit val messageResponseFormat = Json.format[MessageResponse]
 }

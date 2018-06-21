@@ -98,7 +98,7 @@ case class ChatEphemeral(channel: String,
                          as_user: Option[Boolean] = None,
                          attachments: Option[Seq[AttachmentField]] = None,
                          link_names: Option[Boolean] = None,
-                         parse: Option[String] = None){
+                         parse: Option[String] = None) {
 
   def asUser(): ChatEphemeral = copy(as_user = Some(true))
 
@@ -114,6 +114,22 @@ case class ChatEphemeral(channel: String,
   def enableNamesLinking(): ChatEphemeral = copy(link_names = Some(true))
 
 }
+
+case class AttachmentResponse(text: Option[String] = None,
+                              id: Option[Int] = None,
+                              fallback: Option[String] = None)
+
+case class EmbeddedMessageResponse(text: Option[String] = None,
+                                   username: Option[String] = None,
+                                   bot_id: Option[String] = None,
+                                   attachments: Option[Seq[AttachmentResponse]] = None,
+                                   `type`: Option[String] = None,
+                                   subtype: Option[String] = None,
+                                   ts: Option[String] = None)
+
+case class MessageResponse(channel: Option[String] = None,
+                           ts: Option[String] = None,
+                           message: Option[EmbeddedMessageResponse] = None)
 
 object ChatMessage {
   def apply(

@@ -2,13 +2,12 @@ import akka.actor.ActorSystem
 import app.SlackClient
 import models._
 import org.scalatest.FunSuite
-import org.scalatest.Matchers._
 import play.api.libs.json._
-
+import org.scalatest.Matchers._
 import scala.concurrent.Await
-import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
-import scala.util.Try
+import scala.util.{Success, Try}
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
@@ -20,8 +19,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel") {
     val response = Await.result(client.postMessage(channel, "This is a message"), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send a message to a channel (ChatMessage)") {
@@ -34,15 +32,16 @@ class ClientTest extends FunSuite {
           .withPretext("This is the pretext")
           .withText("YOLO")
       )
+
     val response = Await.result(client.postMessage(message), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send an ephemeral message to a channel") {
     val response = Await.result(client.postEphemeral(channel, "This is an ephemeral message", userId), Duration.create(20, "s"))
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send a message to a channel with buttons") {
@@ -56,8 +55,7 @@ class ClientTest extends FunSuite {
       client.postMessage(channel, "This is a message with buttons", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
 
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   val fields: List[BasicField] = List(
@@ -74,8 +72,7 @@ class ClientTest extends FunSuite {
       client.postMessage(channel, "This is a message with a menu", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
 
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send a message to a channel with a menu listing users") {
@@ -87,8 +84,7 @@ class ClientTest extends FunSuite {
       client.postMessage(channel, "This is a message with a menu listing users", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
 
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send a message to a channel with a menu listing channels") {
@@ -100,8 +96,7 @@ class ClientTest extends FunSuite {
       client.postMessage(channel, "This is a message with a menu listing channels", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
 
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
@@ -112,13 +107,12 @@ class ClientTest extends FunSuite {
     val response = Await.result(
       client.postMessage(channel, "This is a message with a menu listing converations", attachments = Some(Seq(attachment))), Duration.create(20, "s")
     )
-    assert(response.status == 200)
-    assert((Json.parse(response.body) \ "ok").validate[Boolean].getOrElse(false))
+    response shouldBe an[MessageResponse]
   }
 
   test("Slack client should delete a message") {
     val sendMessage = Await.result(client.postMessage(channel, "This message should be deleted"), Duration.create(20, "s"))
-    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.deleteMessage(channel, ts), Duration.create(20, "s"))
 
     assert(response.status == 200)
@@ -127,7 +121,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should update a message") {
     val sendMessage = Await.result(client.postMessage(channel, "This message should be updated"), Duration.create(20, "s"))
-    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.updateMessage(channel, "Message has been updated", ts), Duration.create(20, "s"))
 
     assert(response.status == 200)
@@ -136,7 +130,7 @@ class ClientTest extends FunSuite {
 
   test("Slack should return a permalink URL for a specific message") {
     val sendMessage = Await.result(client.postMessage(channel, "Message to test permalink"), Duration.create(20, "s"))
-    val ts = (Json.parse(sendMessage.body) \ "ts").validate[String].getOrElse("")
+    val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.getPermalinkMessage(channel, ts), Duration.create(20, "s"))
 
     assert(response.status == 200)
