@@ -4,9 +4,6 @@ package models
   * https://api.slack.com/dialogs
   */
 
-
-
-
 case class Dialog(title: String,
                   callback_id: String,
                   elements: Seq[DialogElement],

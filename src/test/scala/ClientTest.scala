@@ -3,7 +3,6 @@ import app.SlackClient
 import models._
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
-import play.api.libs.json._
 
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
