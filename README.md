@@ -1,6 +1,6 @@
 # scala-slack-client
 
-TODO abstract
+A Scala library to interact with the Slack API.
 
 ## Installation
 
@@ -52,3 +52,22 @@ val attachment = AttachmentField(...)
 
 slackClient.postMessage(channel = "#general", text = "Hello", attachments = Some(List(attachment)))
 ```
+
+All methods can be used the same way.
+
+## Implemented methods
+
+getPermalinkMessage -> https://slack.com/api/chat.getPermalink  
+postMessage -> https://api.slack.com/methods/chat.postMessage  
+postEphemeral -> https://slack.com/api/chat.postEphemeral  
+deleteMessage -> https://slack.com/api/chat.delete  
+updateMessage -> https://slack.com/api/chat.update  
+meMessage -> https://slack.com/api/chat.meMessage  
+openDialog -> https://slack.com/api/dialog.open  
+channelList -> https://slack.com/api/channels.list  
+imClose -> https://slack.com/api/im.close  
+imOpen -> https://slack.com/api/im.open  
+userInfo -> https://slack.com/api/users.info  
+usersList -> https://slack.com/api/users.list  
+userLookupByEmail -> https://slack.com/api/users.lookupByEmail  
+
