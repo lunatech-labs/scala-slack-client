@@ -1,4 +1,4 @@
-package models
+package client.slack.models
 
 case class ActionsField(
                          name: String,

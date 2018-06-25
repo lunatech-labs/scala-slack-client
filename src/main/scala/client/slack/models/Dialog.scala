@@ -1,4 +1,4 @@
-package models
+package client.slack.models
 
 /**
   * https://api.slack.com/dialogs

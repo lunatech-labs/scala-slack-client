@@ -1,4 +1,4 @@
-package models
+package client.slack.models
 
 case class UsersList(
                       members: Option[Seq[User]] = None,

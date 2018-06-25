@@ -1,6 +1,6 @@
 import akka.actor.ActorSystem
-import app.SlackClient
-import models._
+import client.slack.api.SlackClient
+import client.slack.models.{ActionField, AttachmentField, BasicField, Channels, ChatMessage, ChatResponse, Field, MessageResponse, PermaLink, UserInfo, UsersList}
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
 

@@ -1,3 +1,5 @@
+package client.slack
+
 import play.api.libs.json.Json
 
 package object models {

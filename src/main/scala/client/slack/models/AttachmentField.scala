@@ -1,6 +1,6 @@
-package models
+package client.slack.models
 
-case class Field(title: String, value:String, short: Boolean = false) {
+case class Field(title: String, value: String, short: Boolean = false) {
   def asShort: Field = copy(short = true)
 }
 
@@ -53,7 +53,7 @@ case class AttachmentField(
 
   def addField(field: Field): AttachmentField = {
     fields match {
-      case Some(fs) => copy(fields = Some(fs:+field))
+      case Some(fs) => copy(fields = Some(fs :+ field))
       case None => copy(fields = Some(List(field)))
     }
   }
@@ -89,7 +89,7 @@ case class ActionField(
 
   def withId(id: String): ActionField = copy(id = Some(id))
 
-  def withValue(value : String): ActionField = copy(value = Some(value))
+  def withValue(value: String): ActionField = copy(value = Some(value))
 
   def asDefaultButton: ActionField = copy(style = Some("default"), `type` = "button")
 
@@ -97,7 +97,7 @@ case class ActionField(
 
   def asDangerButton: ActionField = copy(style = Some("danger"), `type` = "button")
 
-  def asMenu(fields: Seq[BasicField], selectedOptions: Option[Seq[OptionField]] = None): ActionField = copy(`type` = "select", options=Some(fields), selected_options = selectedOptions)
+  def asMenu(fields: Seq[BasicField], selectedOptions: Option[Seq[OptionField]] = None): ActionField = copy(`type` = "select", options = Some(fields), selected_options = selectedOptions)
 
   def asMenuWithGroupOption(fields: Seq[OptionGroupsField], selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
     copy(`type` = "select", option_groups = Some(fields), selected_options = selectedOptions)
@@ -115,7 +115,7 @@ case class ActionField(
     copy(`type` = "select", data_source = Some("conversation"), selected_options = selectedOptions)
   }
 
-  def asExternalMenu(minQueryLength: Option[Int] = None ,selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
+  def asExternalMenu(minQueryLength: Option[Int] = None, selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
     copy(`type` = "select", data_source = Some("external"), selected_options = selectedOptions, min_query_length = minQueryLength)
   }
 }

@@ -1,4 +1,4 @@
-package models
+package client.slack.models
 
 case class Channels(
                      channels: Option[Seq[Channel]] = None,
