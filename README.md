@@ -1,6 +1,6 @@
 # scala-slack-client
 
-A Scala library to interact with the Slack API.
+A Scala library to interact with the Slack [API](https://api.slack.com).
 
 ## Installation
 

@@ -12,13 +12,13 @@ case class Payload(
                     channel: NameField,
                     user: NameField,
                     action_ts: String,
-                    message_ts: String,
-                    attachment_id: String,
+                    message_ts: Option[String],
+                    attachment_id: Option[String],
                     token: String,
-                    is_app_unfurl: Boolean,
-                    original_message: Message,
+                    is_app_unfurl: Option[Boolean],
+                    original_message: Option[Message],
                     response_url: String,
-                    trigger_id: String
+                    trigger_id: Option[String]
                   )
 
 case class Message(
