@@ -1,6 +1,6 @@
-package client.slack.api
+package com.lunatech.slack.client.api
 
-import client.slack.models.Payload
+import com.lunatech.slack.client.models.Payload
 import play.api.libs.json._
 
 import scala.util.{Failure, Success, Try}

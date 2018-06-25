@@ -1,8 +1,8 @@
-package client.slack.api
+package com.lunatech.slack.client.api
 
 import akka.actor.ActorSystem
 import akka.stream.ActorMaterializer
-import client.slack.models.{ChatMessage, MessageResponse, _}
+import com.lunatech.slack.client.models.{ChatMessage, MessageResponse, _}
 import play.api.libs.json._
 import play.api.libs.ws.JsonBodyWritables._
 import play.api.libs.ws.ahc.StandaloneAhcWSClient

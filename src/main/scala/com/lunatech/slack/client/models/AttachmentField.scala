@@ -1,4 +1,4 @@
-package client.slack.models
+package com.lunatech.slack.client.models
 
 case class Field(title: String, value: String, short: Boolean = false) {
   def asShort: Field = copy(short = true)

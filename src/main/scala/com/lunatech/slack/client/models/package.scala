@@ -1,4 +1,4 @@
-package client.slack
+package com.lunatech.slack.client
 
 import play.api.libs.json.Json
 

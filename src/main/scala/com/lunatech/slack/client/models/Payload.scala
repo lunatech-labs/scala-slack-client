@@ -1,4 +1,4 @@
-package client.slack.models
+package com.lunatech.slack.client.models
 
 case class Payload(
                     `type`: String,
