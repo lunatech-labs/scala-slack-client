@@ -16,6 +16,10 @@ class ClientTest extends FunSuite {
   private val userId = system.settings.config.getString("test.userId")
   private val client = new SlackClient(token)
 
+  test("test slach command parse") {
+
+  }
+
   test("Slack client should send a message to a channel") {
     val response = Await.result(client.postMessage(channel, "This is a message"), Duration.create(20, "s"))
     response shouldBe an[MessageResponse]

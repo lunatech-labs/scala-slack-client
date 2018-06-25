@@ -3,7 +3,8 @@ package models
 case class ActionsField(
                          name: String,
                          `type`: String,
-                         selected_options: Seq[SelectedOption]
+                         selected_options: Option[Seq[SelectedOption]],
+                         value: Option[String],
                        )
 
 case class SelectedOption(

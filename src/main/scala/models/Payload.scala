@@ -6,7 +6,8 @@ import scala.util.{Failure, Success, Try}
 
 case class Payload(
                     `type`: String,
-                    actions: Seq[ActionsField],
+                    actions: Option[Seq[ActionsField]],
+                    submission: Option[Map[String, String]],
                     callback_id: String,
                     team: TeamField,
                     channel: NameField,
@@ -18,7 +19,7 @@ case class Payload(
                     is_app_unfurl: Option[Boolean],
                     original_message: Option[Message],
                     response_url: String,
-                    trigger_id: Option[String]
+                    trigger_id: Option[String],
                   )
 
 case class Message(
@@ -37,16 +38,36 @@ case class Message(
                   )
 
 object Payload {
-  def getPayload(payload: String): Try[Payload] = {
-    val jsonPayload: JsValue = Json.parse(payload)
+  def getPayload(body: String): Try[Payload] = {
+    val bodyMap = body.split('&')
+      .map(value => value.split('='))
+      .filter(token => token.length == 2)
+      .map(token => token(0) -> token(1))
+      .toMap
 
-    val payloadFromJson = Json.fromJson[Payload](jsonPayload)
+    getPayload(bodyMap)
+  }
 
-    payloadFromJson match {
-      case payload: JsSuccess[Payload] =>
-        Success(payload.value)
-      case error: JsError =>
-        Failure(new Exception("Payload has not a correct json format"))
+  def getPayload(body: Map[String, Any]) = {
+    val mapString: Map[String, String] = body.map {
+      case (k, v) => v match {
+        case v: String => k -> v
+        case v: Seq[String] => k -> v.headOption.getOrElse("")
+        case _ => k -> ""
+      }
     }
+
+    val payloadString = mapString.getOrElse("payload", "")
+
+    if(payloadString.isEmpty) {
+      Failure(new Exception("No payload"))
+    } else {
+      Json.fromJson[Payload](Json.parse(payloadString)) match {
+        case JsSuccess(json, _) => Success(json)
+        case JsError(e) => Failure(new Exception(s"Invalid Payload : $e"))
+      }
+    }
+
+
   }
 }
