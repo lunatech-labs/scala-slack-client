@@ -16,12 +16,9 @@ class ClientTest extends FunSuite {
   private val userId = system.settings.config.getString("test.userId")
   private val client = new SlackClient(token)
 
-  test("test slach command parse") {
-
-  }
-
   test("Slack client should send a message to a channel") {
-    val response = Await.result(client.postMessage(channel, "This is a message"), Duration.create(20, "s"))
+    val chatMessage = ChatMessage(channel, "This is a message")
+    val response = Await.result(client.postMessage(chatMessage), Duration.create(20, "s"))
     response shouldBe an[MessageResponse]
   }
 
@@ -42,7 +39,8 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should send an ephemeral message to a channel") {
-    val response = Await.result(client.postEphemeral(channel, "This is an ephemeral message", userId), Duration.create(20, "s"))
+    val ephemeralMessage = ChatEphemeral(channel, "This is an ephemeral message", userId)
+    val response = Await.result(client.postEphemeral(ephemeralMessage), Duration.create(20, "s"))
 
     response shouldBe an[MessageResponse]
   }
@@ -54,8 +52,10 @@ class ClientTest extends FunSuite {
       .addAction(ActionField("Primary button", "Primary").asPrimaryButton)
       .addAction(ActionField("Danger button", "Danger").asDangerButton.withConfirmation("Are you sure ?"))
 
+    val chatMessage = ChatMessage(channel, "This is a message with buttons").addAttachment(attachment)
+
     val response = Await.result(
-      client.postMessage(channel, "This is a message with buttons", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+      client.postMessage(chatMessage), Duration.create(20, "s")
     )
 
     response shouldBe an[MessageResponse]
@@ -71,8 +71,10 @@ class ClientTest extends FunSuite {
       List(ActionField("Menu", "The menu").asMenu(fields).withConfirmation("Are you sure ?"))
     )
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)
+
     val response = Await.result(
-      client.postMessage(channel, "This is a message with a menu", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+      client.postMessage(chatMessage), Duration.create(20, "s")
     )
 
     response shouldBe an[MessageResponse]
@@ -83,8 +85,10 @@ class ClientTest extends FunSuite {
       List(ActionField("User menu", "Users").asUserMenu())
     )
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing users").addAttachment(attachment)
+
     val response = Await.result(
-      client.postMessage(channel, "This is a message with a menu listing users", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+      client.postMessage(chatMessage), Duration.create(20, "s")
     )
 
     response shouldBe an[MessageResponse]
@@ -95,8 +99,10 @@ class ClientTest extends FunSuite {
       List(ActionField("Channels menu", "Channels").asChannelMenu())
     )
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing channels").addAttachment(attachment)
+
     val response = Await.result(
-      client.postMessage(channel, "This is a message with a menu listing channels", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+      client.postMessage(chatMessage), Duration.create(20, "s")
     )
 
     response shouldBe an[MessageResponse]
@@ -107,14 +113,17 @@ class ClientTest extends FunSuite {
       List(ActionField("Channels menu", "Converations").asConversationMenu())
     )
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)
+
     val response = Await.result(
-      client.postMessage(channel, "This is a message with a menu listing converations", attachments = Some(Seq(attachment))), Duration.create(20, "s")
+      client.postMessage(chatMessage), Duration.create(20, "s")
     )
     response shouldBe an[MessageResponse]
   }
 
   test("Slack client should delete a message") {
-    val sendMessage = Await.result(client.postMessage(channel, "This message should be deleted"), Duration.create(20, "s"))
+    val chatMessage = ChatMessage(channel, "This message should be deleted")
+    val sendMessage = Await.result(client.postMessage(chatMessage), Duration.create(20, "s"))
     val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.deleteMessage(channel, ts), Duration.create(20, "s"))
 
@@ -122,7 +131,8 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should update a message") {
-    val sendMessage = Await.result(client.postMessage(channel, "This message should be updated"), Duration.create(20, "s"))
+    val chatMessage = ChatMessage(channel, "This message should be updated")
+    val sendMessage = Await.result(client.postMessage(chatMessage), Duration.create(20, "s"))
     val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.updateMessage(channel, "Message has been updated", ts), Duration.create(20, "s"))
 
@@ -130,7 +140,8 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack should return a permalink URL for a specific message") {
-    val sendMessage = Await.result(client.postMessage(channel, "Message to test permalink"), Duration.create(20, "s"))
+    val chatMessage = ChatMessage(channel, "Message to test permalink")
+    val sendMessage = Await.result(client.postMessage(chatMessage), Duration.create(20, "s"))
     val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.getPermalinkMessage(channel, ts), Duration.create(20, "s"))
 
