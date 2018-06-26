@@ -6,18 +6,18 @@ import play.api.libs.json._
 import scala.util.{Failure, Success, Try}
 
 case class SlashCommandPayload(token: Option[String],
-                               team_id: Option[String],
-                               team_domain: Option[String],
-                               enterprise_id: Option[String],
-                               enterprise_name: Option[String],
-                               channel_id: Option[String],
-                               channel_name: Option[String],
-                               user_id: Option[String],
-                               user_name: Option[String],
-                               command: Option[String],
-                               text: Option[String],
-                               response_url: Option[String],
-                               trigger_id: Option[String])
+  team_id: Option[String],
+  team_domain: Option[String],
+  enterprise_id: Option[String],
+  enterprise_name: Option[String],
+  channel_id: Option[String],
+  channel_name: Option[String],
+  user_id: Option[String],
+  user_name: Option[String],
+  command: Option[String],
+  text: Option[String],
+  response_url: Option[String],
+  trigger_id: Option[String])
 
 object Parser {
   def slashCommand(body: String): Try[SlashCommandPayload] = {

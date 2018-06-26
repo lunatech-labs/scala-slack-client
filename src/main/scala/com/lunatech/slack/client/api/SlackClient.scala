@@ -26,33 +26,6 @@ class SlackClient(token: String) {
       .flatMap(response => jsonToClass[PermaLink](response.body))
   }
 
-  /**
-    * https://api.slack.com/methods/chat.postMessage
-    */
-  def postMessage(channel: String, text: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
-                  iconEmoji: Option[String] = None, iconUrl: Option[String] = None, linkNames: Option[String] = None,
-                  mrkdwn: Option[Boolean] = None, parse: Option[String] = None, replyBroadcast: Option[Boolean] = None,
-                  threadTs: Option[String] = None, unfurlLinks: Option[Boolean] = None, unfurlMedia: Option[Boolean] = None,
-                  username: Option[String] = None)(implicit ec: ExecutionContext): Future[MessageResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.postMessage"),
-      Json.obj(
-        "channel" -> channel,
-        "text" -> text,
-        "as_user" -> asUser,
-        "attachments" -> attachments,
-        "icon_emoji" -> iconEmoji,
-        "icon_url" -> iconUrl,
-        "link_names" -> linkNames,
-        "mrkdwn" -> mrkdwn,
-        "parse" -> parse,
-        "reply_broadcast" -> replyBroadcast,
-        "thread_ts" -> threadTs,
-        "unfurl_links" -> unfurlLinks,
-        "unfurl_media" -> unfurlMedia,
-        "username" -> username
-      ))
-      .flatMap(response => jsonToClass[MessageResponse](response.body))
-  }
 
   /**
     * https://api.slack.com/methods/chat.postMessage
@@ -60,23 +33,6 @@ class SlackClient(token: String) {
   def postMessage(message: ChatMessage)(implicit ec: ExecutionContext): Future[MessageResponse] = {
     makeApiCall(system.settings.config.getString("slack.api.postMessage"), Json.toJson(message))
       .flatMap(response => jsonToClass[MessageResponse](response.body))
-  }
-
-  /**
-    * https://slack.com/api/chat.postEphemeral
-    */
-  def postEphemeral(channel: String, text: String, user: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
-                    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[MessageResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.postEphemeral"),
-      Json.obj(
-        "channel" -> channel,
-        "text" -> text,
-        "user" -> user,
-        "as_user" -> asUser,
-        "attachments" -> attachments,
-        "link_names" -> linkNames,
-        "parse" -> parse
-      )).flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
   /**
@@ -130,7 +86,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/chat.update
     */
   def updateMessage(channel: String, text: String, ts: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
-                    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
+    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
     makeApiCall(system.settings.config.getString("slack.api.updateMessage"),
       Json.obj(
         "channel" -> channel,
@@ -160,7 +116,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/channels.list
     */
   def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
-                  limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
+    limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
     makeApiCall(system.settings.config.getString("slack.api.channelList"),
       Json.obj(
         "cursor" -> cursor,
@@ -234,7 +190,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/users.list
     */
   def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None
-                , presence: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UsersList] = {
+    , presence: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UsersList] = {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
