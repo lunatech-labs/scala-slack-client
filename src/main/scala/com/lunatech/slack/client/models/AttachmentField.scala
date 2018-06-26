@@ -9,7 +9,7 @@ case class Field(title: String, value: String, short: Boolean = false) {
 case class AttachmentField(
   fallback: String,
   callback_id: String,
-  actions: Option[Seq[ActionField]] = None,
+  actions: Seq[ActionField],
   text: Option[String] = None,
   title: Option[String] = None,
   id: Option[Int] = None,

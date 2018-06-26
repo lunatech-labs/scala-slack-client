@@ -76,6 +76,8 @@ class ClientTest extends FunSuite {
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)
+
     val response = Await.result(
       client.postMessage(chatMessage), Duration.create(20, "s")
     )
@@ -87,6 +89,8 @@ class ClientTest extends FunSuite {
     val attachment = AttachmentField("upgrade your client api", "action_test",
       Some(List(ActionField("User menu", "Users").asUserMenu()))
     )
+
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing users").addAttachment(attachment)
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing users").addAttachment(attachment)
 
@@ -104,6 +108,8 @@ class ClientTest extends FunSuite {
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing channels").addAttachment(attachment)
 
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing channels").addAttachment(attachment)
+
     val response = Await.result(
       client.postMessage(chatMessage), Duration.create(20, "s")
     )
@@ -115,6 +121,8 @@ class ClientTest extends FunSuite {
     val attachment = AttachmentField("upgrade your client api", "action_test",
       Some(List(ActionField("Channels menu", "Converations").asConversationMenu()))
     )
+
+    val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)
 
