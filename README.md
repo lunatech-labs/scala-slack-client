@@ -2,7 +2,7 @@
 
 A Scala library to interact with the Slack [API](https://api.slack.com).
 
-[ ![Codeship Status for lunatech-labs/scala-slack-client](https://app.codeship.com/projects/0a9404a0-5ce4-0136-2cc1-460bed3baf8d/status?branch=develop)](https://app.codeship.com/projects/295784)
+[ ![Codeship Status for lunatech-labs/scala-slack-client](https://app.codeship.com/projects/0a9404a0-5ce4-0136-2cc1-460bed3baf8d/status?branch=master)](https://app.codeship.com/projects/295784)
 
 ## Installation
 
@@ -22,7 +22,7 @@ To run the Hello world code below add **chat:write:bot** in permissions scope.
 * Put the code below in your scala project and your bot should send an *"Hello, world!"* in your channel **#General**
 
 ```scala
-val slackClient = new SlackClient(<Bot token>)
+val slackClient = SlackClient(<Bot token>)
 slackClient.postMessage("#general", "Hello, Wold!")
 ```
 
