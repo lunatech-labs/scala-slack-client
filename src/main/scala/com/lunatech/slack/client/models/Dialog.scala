@@ -109,3 +109,11 @@ object Dialog {
     callback_id: String
   ): Dialog = new Dialog(title, callback_id, List())
 }
+
+object DialogOption {
+  implicit val dialogOptionFormat = Json.format[DialogOption]
+}
+
+object DialogOptionGroup {
+  implicit val dialogOptionGroupFormat = Json.format[DialogOptionGroup]
+}
