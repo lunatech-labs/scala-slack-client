@@ -1,12 +1,21 @@
+import java.net.URI
+
 import akka.actor.ActorSystem
+import akka.stream.scaladsl.Source
+import akka.util.ByteString
 import com.lunatech.slack.client.api.SlackClient
 import com.lunatech.slack.client.models._
+import com.lunatech.slack.client.services.SlackCaller
 import org.scalatest.FunSuite
 import org.scalatest.Matchers._
+import play.api.libs.json.{JsValue, Json}
+import play.api.libs.ws.{StandaloneWSResponse, WSCookie}
 
-import scala.concurrent.Await
+import scala.concurrent.{Await, ExecutionContext, Future}
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import play.api.test.Helpers._
+
 
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
@@ -14,7 +23,33 @@ class ClientTest extends FunSuite {
   private val token = system.settings.config.getString("test.token")
   private val channel = system.settings.config.getString("test.channel")
   private val userId = system.settings.config.getString("test.userId")
-  private val client = SlackClient(token)
+
+  private val client = SlackClient(token, new SlackCaller(token){
+    override def makeApiCall(url: String, body: JsValue)(implicit ec: ExecutionContext) = {
+
+      Future.successful(new StandaloneWSResponse(){
+        override def uri: URI = ???
+
+        override def headers: Map[String, Seq[String]] = ???
+
+        override def underlying[T]: T = ???
+
+        override def status: Int = OK
+
+        override def statusText: String = ???
+
+        override def cookies: Seq[WSCookie] = ???
+
+        override def cookie(name: String): Option[WSCookie] = ???
+
+        override def body: String = Json.obj("ok" -> true).toString()
+
+        override def bodyAsBytes: ByteString = ???
+
+        override def bodyAsSource: Source[ByteString, _] = ???
+      })
+    }
+  })
 
   test("Slack client should send a message to a channel") {
     val chatMessage = ChatMessage(channel, "This is a message")
