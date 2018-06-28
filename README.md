@@ -22,7 +22,7 @@ To run the Hello world code below add **chat:write:bot** in permissions scope.
 * Put the code below in your scala project and your bot should send an *"Hello, world!"* in your channel **#General**
 
 ```scala
-val slackClient = new SlackClient(<Bot token>)
+val slackClient = new SlackClient("<Bot token>")
 slackClient.postMessage("#general", "Hello, Wold!")
 ```
 
