@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class Field(title: String, value: String, short: Boolean = false) {
   def asShort: Field = copy(short = true)
 }
@@ -59,9 +61,16 @@ case class AttachmentField(
   }
 }
 
+object Field {
+  implicit val fieldFormat = Json.format[Field]
+}
+
 object AttachmentField {
+  implicit val attachmentFieldFormat = Json.format[AttachmentField]
+
   def apply(
     fallback: String,
     callback_id: String
   ): AttachmentField = new AttachmentField(fallback, callback_id, List())
 }
+

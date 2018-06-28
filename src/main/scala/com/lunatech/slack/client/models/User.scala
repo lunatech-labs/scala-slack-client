@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class UsersList(
   members: Option[Seq[User]] = None,
   cacheTs: Option[Int] = None,
@@ -48,3 +50,23 @@ case class Profile(
 )
 
 case class Metadata(nextCursor: Option[String] = None)
+
+object Metadata {
+  implicit val metadataResponseFormat = Json.format[Metadata]
+}
+
+object Profile {
+  implicit val profileFormat = Json.format[Profile]
+}
+
+object User {
+  implicit val userFormat = Json.format[User]
+}
+
+object UserInfo {
+  implicit val userInfoResponseFormat = Json.format[UserInfo]
+}
+
+object UsersList {
+  implicit val usersListResponseFormat = Json.format[UsersList]
+}

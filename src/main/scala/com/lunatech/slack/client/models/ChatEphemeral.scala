@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class ChatEphemeral(channel: String,
   text: String,
   user: String,
@@ -40,3 +42,23 @@ case class MessageResponse(channel: Option[String] = None,
   message: Option[EmbeddedMessageResponse] = None)
 
 case class ChatResponse(channel: Option[String] = None, ts: Option[String] = None, text: Option[String] = None)
+
+object ChatEphemeral {
+  implicit val chatEphemeralFormat = Json.format[ChatEphemeral]
+}
+
+object AttachmentResponse {
+  implicit val attachmentResponseFormat = Json.format[AttachmentResponse]
+}
+
+object EmbeddedMessageResponse {
+  implicit val embeddedMessageResponseFormat = Json.format[EmbeddedMessageResponse]
+}
+
+object MessageResponse {
+  implicit val messageResponseFormat = Json.format[MessageResponse]
+}
+
+object ChatResponse {
+  implicit val chatResponseFormat = Json.format[ChatResponse]
+}

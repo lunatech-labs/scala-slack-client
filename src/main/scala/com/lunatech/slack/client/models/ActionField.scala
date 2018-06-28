@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class ActionField(
   name: String,
   text: String,
@@ -55,6 +57,8 @@ case class ActionField(
 }
 
 object ActionField {
+  implicit val actionFieldFormat = Json.format[ActionField]
+
   def apply(
     name: String,
     text: String,
