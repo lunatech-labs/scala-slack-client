@@ -245,5 +245,8 @@ class SlackClient(token: String) {
       }
     }
   }
+}
 
+object SlackClient {
+  def apply(token: String): SlackClient = new SlackClient(token)
 }

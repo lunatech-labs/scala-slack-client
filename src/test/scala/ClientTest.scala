@@ -14,7 +14,7 @@ class ClientTest extends FunSuite {
   private val token = system.settings.config.getString("test.token")
   private val channel = system.settings.config.getString("test.channel")
   private val userId = system.settings.config.getString("test.userId")
-  private val client = new SlackClient(token)
+  private val client = SlackClient(token)
 
   test("Slack client should send a message to a channel") {
     val chatMessage = ChatMessage(channel, "This is a message")
