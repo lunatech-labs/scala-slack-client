@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class Payload(
   `type`: String,
   actions: Option[Seq[ActionsField]],
@@ -32,4 +34,12 @@ case class Message(
   replace_original: Option[Boolean] = None,
   delete_original: Option[Boolean] = None
 )
+
+object Payload {
+  implicit val payloadFormat = Json.format[Payload]
+}
+
+object Message {
+  implicit val messageFormat = Json.format[Message]
+}
 

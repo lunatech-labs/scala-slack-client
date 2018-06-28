@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 /**
   * https://api.slack.com/dialogs
   */
@@ -87,12 +89,24 @@ case class DialogOptionGroup(label: String,
 
 
 object DialogElement {
+  implicit val dialogElementFormat = Json.format[DialogElement]
+
   def apply(label: String,
     name: String): DialogElement = new DialogElement(label, name, "text")
 }
 
 object Dialog {
+  implicit val dialogFormat = Json.format[Dialog]
+
   def apply(title: String,
     callback_id: String
   ): Dialog = new Dialog(title, callback_id, List())
+}
+
+object DialogOption {
+  implicit val dialogOptionFormat = Json.format[DialogOption]
+}
+
+object DialogOptionGroup {
+  implicit val dialogOptionGroupFormat = Json.format[DialogOptionGroup]
 }
