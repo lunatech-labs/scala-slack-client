@@ -6,7 +6,11 @@ A Scala library to interact with the Slack [API](https://api.slack.com).
 
 ## Installation
 
-TODO
+Add this dependency in your build.sbt
+
+```
+libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.1.0"
+```
 
 ## How to Use
 
