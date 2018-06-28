@@ -87,6 +87,13 @@ case class DialogOptionGroup(label: String,
   def addOption(option: DialogOption): DialogOptionGroup = copy(options = options :+ option)
 }
 
+object DialogOption {
+  implicit val dialogOptionFormat = Json.format[DialogOption]
+}
+
+object DialogOptionGroup {
+  implicit val dialogOptionGroupFormat = Json.format[DialogOptionGroup]
+}
 
 object DialogElement {
   implicit val dialogElementFormat = Json.format[DialogElement]

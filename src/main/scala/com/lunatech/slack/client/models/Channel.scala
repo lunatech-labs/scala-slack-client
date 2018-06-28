@@ -59,26 +59,26 @@ case class Purpose(
   last_set: Option[Int] = None
 )
 
-object Channels {
-  implicit val channelsFormat = Json.format[Channels]
-}
-
-object Channel {
-  implicit val channelFormat = Json.format[Channel]
-}
-
-object Latest {
-  implicit val latestFormat = Json.format[Latest]
-}
-
-object ChannelAttachments {
-  implicit val channelAttachmentsFormat = Json.format[ChannelAttachments]
+object Purpose {
+  implicit val purposeFormat = Json.format[Purpose]
 }
 
 object Topic {
   implicit val topicFormat = Json.format[Topic]
 }
 
-object Purpose {
-  implicit val purposeFormat = Json.format[Purpose]
+object ChannelAttachments {
+  implicit val channelAttachmentsFormat = Json.format[ChannelAttachments]
+}
+
+object Latest {
+  implicit val latestFormat = Json.format[Latest]
+}
+
+object Channel {
+  implicit val channelFormat = Json.format[Channel]
+}
+
+object Channels {
+  implicit val channelsFormat = Json.format[Channels]
 }

@@ -2,19 +2,6 @@ package com.lunatech.slack.client.models
 
 import play.api.libs.json.Json
 
-case class ActionsField(
-  name: String,
-  `type`: String,
-  selected_options: Option[Seq[SelectedOption]],
-  value: Option[String],
-)
-
-case class SelectedOption(value: String)
-
-case class TeamField(id: String, domain: String)
-
-case class NameField(id: String, name: String)
-
 case class ConfirmField(
   text: String,
   title: Option[String] = None,
@@ -92,9 +79,6 @@ object ChatMessage {
   ): ChatMessage = new ChatMessage(channel, text)
 }
 
-object ActionsField {
-  implicit val actionsFieldFormat = Json.format[ActionsField]
-}
 
 object BasicField {
   implicit val basicFieldFormat = Json.format[BasicField]
@@ -104,26 +88,10 @@ object ConfirmField {
   implicit val confirmFieldFormat = Json.format[ConfirmField]
 }
 
-object Message {
-  implicit val originalMessageFormat = Json.format[Message]
-}
-
-object NameField {
-  implicit val nameFieldFormat = Json.format[NameField]
-}
-
 object OptionField {
   implicit val optionFieldFormat = Json.format[OptionField]
 }
 
 object OptionGroupsField {
   implicit val optionGroupsFieldFormat = Json.format[OptionGroupsField]
-}
-
-object SelectedOption {
-  implicit val selectedFieldFormat = Json.format[SelectedOption]
-}
-
-object TeamField {
-  implicit val teamFieldFormat = Json.format[TeamField]
 }

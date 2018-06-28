@@ -61,6 +61,10 @@ case class AttachmentField(
   }
 }
 
+object Field {
+  implicit val fieldFormat = Json.format[Field]
+}
+
 object AttachmentField {
   implicit val attachmentFieldFormat = Json.format[AttachmentField]
 
@@ -70,6 +74,3 @@ object AttachmentField {
   ): AttachmentField = new AttachmentField(fallback, callback_id, List())
 }
 
-object Field {
-  implicit val fieldFormat = Json.format[Field]
-}

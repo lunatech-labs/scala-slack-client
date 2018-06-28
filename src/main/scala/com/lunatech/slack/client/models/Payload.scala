@@ -35,11 +35,41 @@ case class Message(
   delete_original: Option[Boolean] = None
 )
 
-object Payload {
-  implicit val payloadFormat = Json.format[Payload]
+case class TeamField(id: String, domain: String)
+
+case class NameField(id: String, name: String)
+
+case class ActionsField(
+  name: String,
+  `type`: String,
+  selected_options: Option[Seq[SelectedOption]],
+  value: Option[String],
+)
+
+case class SelectedOption(value: String)
+
+object SelectedOption {
+  implicit val selectedFieldFormat = Json.format[SelectedOption]
+}
+
+object ActionsField {
+  implicit val actionsFieldFormat = Json.format[ActionsField]
+}
+
+object NameField {
+  implicit val nameFieldFormat = Json.format[NameField]
+}
+
+object TeamField {
+  implicit val teamFieldFormat = Json.format[TeamField]
 }
 
 object Message {
   implicit val messageFormat = Json.format[Message]
 }
+
+object Payload {
+  implicit val payloadFormat = Json.format[Payload]
+}
+
 
