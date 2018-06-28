@@ -2,6 +2,8 @@
 
 A Scala library to interact with the Slack [API](https://api.slack.com).
 
+[![Build Status](https://travis-ci.org/lunatech-labs/scala-slack-client.svg?branch=develop)](https://travis-ci.org/lunatech-labs/scala-slack-client)
+
 ## Installation
 
 TODO
