@@ -10,10 +10,7 @@ import play.api.libs.ws.ahc.StandaloneAhcWSClient
 import scala.concurrent.{ExecutionContext, Future}
 
 
-class SlackClient(token: String) {
-  implicit val system = ActorSystem()
-  implicit val materializer = ActorMaterializer()
-
+class SlackClient(token: String, config: SlackClientConfig)(implicit system: ActorSystem, materializer: ActorMaterializer) {
   val wsClient = StandaloneAhcWSClient()
 
   /**
@@ -22,7 +19,7 @@ class SlackClient(token: String) {
   def getPermalinkMessage(channel: String, messageTs: String)(implicit ec: ExecutionContext): Future[PermaLink] = {
     val params: Map[String, String] = Map("channel" -> channel, "message_ts" -> messageTs)
 
-    makeGetApiCall(system.settings.config.getString("slack.api.getPermalinkMessage"), params)
+    makeGetApiCall(config.getPermalinkMessageUrl, params)
       .flatMap(response => jsonToClass[PermaLink](response.body))
   }
 
@@ -31,7 +28,7 @@ class SlackClient(token: String) {
     * https://api.slack.com/methods/chat.postMessage
     */
   def postMessage(message: ChatMessage)(implicit ec: ExecutionContext): Future[MessageResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.postMessage"), Json.toJson(message))
+    makeApiCall(config.postMessageUrl, Json.toJson(message))
       .flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
@@ -39,7 +36,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/chat.postEphemeral
     */
   def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Future[MessageResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.postEphemeral"), Json.toJson(chatEphemeral))
+    makeApiCall(config.postEphemeralUrl, Json.toJson(chatEphemeral))
       .flatMap(response => jsonToClass[MessageResponse](response.body))
   }
 
@@ -47,7 +44,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/chat.delete
     */
   def deleteMessage(channel: String, ts: String, asUser: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.deleteMessage"),
+    makeApiCall(config.deleteMessageUrl,
       Json.obj(
         "channel" -> channel,
         "ts" -> ts,
@@ -60,7 +57,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/dialog.open
     */
   def openDialog(dialog: Dialog, triggerId: String)(implicit ec: ExecutionContext): Future[Unit] = {
-    makeApiCall(system.settings.config.getString("slack.api.openDialog"),
+    makeApiCall(config.openDialogUrl,
       Json.obj(
         "dialog" -> dialog,
         "trigger_id" -> triggerId
@@ -83,7 +80,7 @@ class SlackClient(token: String) {
     */
   def updateMessage(channel: String, text: String, ts: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
     linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.updateMessage"),
+    makeApiCall(config.updateMessageUrl,
       Json.obj(
         "channel" -> channel,
         "text" -> text,
@@ -100,7 +97,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/chat.meMessage
     */
   def meMessage(channel: String, text: String)(implicit ec: ExecutionContext): Future[ChatResponse] = {
-    makeApiCall(system.settings.config.getString("slack.api.meMessage"),
+    makeApiCall(config.meMessageUrl,
       Json.obj(
         "channel" -> channel,
         "text" -> text
@@ -113,7 +110,7 @@ class SlackClient(token: String) {
     */
   def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
     limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
-    makeApiCall(system.settings.config.getString("slack.api.channelList"),
+    makeApiCall(config.channelListUrl,
       Json.obj(
         "cursor" -> cursor,
         "exclude_archived" -> excludeArchived,
@@ -126,7 +123,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/im.close
     */
   def imClose(channel: String)(implicit ec: ExecutionContext): Future[Unit] = {
-    makeApiCall(system.settings.config.getString("slack.api.imClose"),
+    makeApiCall(config.imCloseUrl,
       Json.obj(
         "channel" -> channel
       ))
@@ -147,7 +144,7 @@ class SlackClient(token: String) {
     * https://slack.com/api/im.open
     */
   def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[String] = {
-    val response = makeApiCall(system.settings.config.getString("slack.api.imOpen"),
+    val response = makeApiCall(config.imOpenUrl,
       Json.obj(
         "user" -> user,
         "include_locale" -> includeLocale,
@@ -177,7 +174,7 @@ class SlackClient(token: String) {
   def userInfo(user: String, includeLocale: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UserInfo] = {
     val params: Map[String, String] = Map("user" -> user, "include_locale" -> includeLocale.getOrElse(false).toString)
 
-    makeGetApiCall(system.settings.config.getString("slack.api.userInfo"), params)
+    makeGetApiCall(config.userInfoUrl, params)
       .flatMap(response => jsonToClass[UserInfo](response.body))
   }
 
@@ -189,7 +186,7 @@ class SlackClient(token: String) {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
-    makeGetApiCall(system.settings.config.getString("slack.api.usersList"), params)
+    makeGetApiCall(config.usersListUrl, params)
       .flatMap(response => jsonToClass[UsersList](response.body))
   }
 
@@ -199,7 +196,7 @@ class SlackClient(token: String) {
   def userLookupByEmail(email: String)(implicit ec: ExecutionContext): Future[UserInfo] = {
     val params: Map[String, String] = Map("email" -> email)
 
-    makeGetApiCall(system.settings.config.getString("slack.api.userLookupByEmail"), params)
+    makeGetApiCall(config.userLookupByEmailUrl, params)
       .flatMap(response => jsonToClass[UserInfo](response.body))
   }
 
@@ -238,5 +235,10 @@ class SlackClient(token: String) {
 }
 
 object SlackClient {
-  def apply(token: String): SlackClient = new SlackClient(token)
+  implicit val system = ActorSystem()
+  implicit val materializer = ActorMaterializer()
+
+  def apply(token: String): SlackClient = new SlackClient(token, SlackConfig.getSlackClientConfig)
+
+  def apply(token: String, config: SlackClientConfig) = new SlackClient(token, config)
 }
