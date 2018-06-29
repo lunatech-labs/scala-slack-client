@@ -38,19 +38,19 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
   def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Future[MessageTs] = {
     slackCaller.makeApiCall(token, config.postEphemeralUrl, Json.toJson(chatEphemeral))
       .flatMap { response =>
-        println(response)
         val bodyJson = Json.parse(response.body)
         (bodyJson \ "ok").validate[Boolean] match {
-
-          case JsSuccess(ok, _) if ok => {
-            (bodyJson \ "message_ts").validate[String] match {
+          case JsSuccess(ok, _) => ok match {
+            case true => (bodyJson \ "message_ts").validate[String] match {
               case JsSuccess(message, _) => Future.successful(message)
-              case _ => (bodyJson \ "error").validate[String] match {
-                case JsSuccess(error, _) => Future.failed(new Exception(s"An error has occured : $error"))
-                case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body.toString}"))
-              }
+              case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
+            }
+            case false => (bodyJson \ "error").validate[String] match {
+              case JsSuccess(error, _)=> Future.failed(new Exception(s"Error: $error"))
+              case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
             }
           }
+          case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
         }
       }
   }
