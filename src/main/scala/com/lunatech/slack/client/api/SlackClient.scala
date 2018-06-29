@@ -5,6 +5,7 @@ import akka.stream.{ActorMaterializer, Materializer}
 import com.lunatech.slack.client.models.{ChatMessage, MessageResponse, _}
 import com.lunatech.slack.client.services.SlackCaller
 import play.api.libs.json._
+import play.api.libs.ws.StandaloneWSResponse
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -40,16 +41,16 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
       .flatMap { response =>
         val bodyJson = Json.parse(response.body)
         (bodyJson \ "ok").validate[Boolean] match {
-          case JsSuccess(ok, _) => ok match {
-            case true => (bodyJson \ "message_ts").validate[String] match {
+          case JsSuccess(true, _) =>
+            (bodyJson \ "message_ts").validate[String] match {
               case JsSuccess(message, _) => Future.successful(message)
               case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
             }
-            case false => (bodyJson \ "error").validate[String] match {
+          case JsSuccess(false, _) =>
+            (bodyJson \ "error").validate[String] match {
               case JsSuccess(error, _)=> Future.failed(new Exception(s"Error: $error"))
               case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
             }
-          }
           case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
         }
       }
@@ -143,16 +144,20 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "channel" -> channel
       ))
       .flatMap { response =>
-        val jsonBody = Json.parse(response.body)
-        (jsonBody \ "ok").validate[Boolean] match {
-          case JsSuccess(ok, _) if ok => Future.successful(())
-          case _ =>
-            (jsonBody \ "error").validate[String] match {
-              case JsSuccess(err, _) => Future.failed(new Exception(s"Error: $err"))
-              case _ => Future.failed(new Exception("There was an error with the query response"))
-            }
-        }
+        handleResponse(response)
       }
+  }
+
+  private def handleResponse(response: StandaloneWSResponse) = {
+    val jsonBody = Json.parse(response.body)
+    (jsonBody \ "ok").validate[Boolean] match {
+      case JsSuccess(ok, _) if ok => Future.successful(())
+      case _ =>
+        (jsonBody \ "error").validate[String] match {
+          case JsSuccess(err, _) => Future.failed(new Exception(s"Error: $err"))
+          case _ => Future.failed(new Exception("There was an error with the query response"))
+        }
+    }
   }
 
   /**
