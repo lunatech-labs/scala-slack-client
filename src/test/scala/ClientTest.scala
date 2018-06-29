@@ -1,4 +1,5 @@
 import akka.actor.ActorSystem
+import akka.stream.{ActorMaterializer, Materializer}
 import com.lunatech.slack.client.api.SlackClient
 import com.lunatech.slack.client.models._
 import org.scalatest.FunSuite
@@ -10,7 +11,8 @@ import scala.concurrent.duration.Duration
 import scala.runtime.BoxedUnit
 
 class ClientTest extends FunSuite {
-  implicit val system = ActorSystem("slack")
+  implicit val system: ActorSystem = ActorSystem("slack")
+  implicit val materializer: Materializer = ActorMaterializer()
 
   private val token = system.settings.config.getString("test.token")
   private val channel = system.settings.config.getString("test.channel")
