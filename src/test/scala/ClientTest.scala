@@ -7,6 +7,7 @@ import org.scalatest.Matchers._
 import scala.concurrent.Await
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.duration.Duration
+import scala.runtime.BoxedUnit
 
 class ClientTest extends FunSuite {
   implicit val system = ActorSystem("slack")
@@ -164,9 +165,8 @@ class ClientTest extends FunSuite {
 
   test("Slack client should close a direct message channel") {
     val openChannel = Await.result(client.imOpen(userId, None, Some(true)), Duration.create(20, "s"))
-    val response = Await.result(client.imClose(openChannel), Duration.create(20, "s"))
 
-    response shouldBe an[None.type]
+    Await.result(client.imClose(openChannel), Duration.create(20, "s")) shouldBe an[BoxedUnit]
   }
 
   test("Slack client should return information about a user") {
