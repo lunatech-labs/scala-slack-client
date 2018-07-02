@@ -172,14 +172,14 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should return information about a user") {
-    Await.result(client.userInfo(userId), Duration.create(20, "s")) shouldBe an[UserInfo]
+    Await.result(client.userInfo(userId), Duration.create(20, "s")) shouldBe an[User]
   }
 
   test("Slack client should return a list of all users in a slack team") {
-    Await.result(client.usersList(), Duration.create(20, "s")) shouldBe an[UsersList]
+    val a = Await.result(client.usersList(), Duration.create(20, "s")) shouldBe an[UsersList]
   }
 
   test("Slack client should find a user with an email address") {
-    Await.result(client.userLookupByEmail(system.settings.config.getString("test.email")), Duration.create(20, "s")) shouldBe an[UserInfo]
+    Await.result(client.userLookupByEmail(system.settings.config.getString("test.email")), Duration.create(20, "s")) shouldBe an[User]
   }
 }

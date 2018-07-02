@@ -29,6 +29,7 @@ case class Channel(
   topic: Option[Topic] = None,
   purpose: Option[Purpose] = None,
   previous_names: Option[Seq[String]] = None,
+  num_members: Option[Int] = None
 )
 
 case class Latest(

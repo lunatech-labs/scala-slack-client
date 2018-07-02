@@ -4,52 +4,53 @@ import play.api.libs.json.Json
 
 case class UsersList(
   members: Option[Seq[User]] = None,
-  cacheTs: Option[Int] = None,
-  responseMetadata: Option[Metadata] = None,
+  cache_ts: Option[Int] = None,
+  response_metadata: Option[Metadata] = None,
 )
 
 case class UserInfo(user: User)
 
 case class User(
   id: String,
-  teamId: Option[String] = None,
+  team_id: Option[String] = None,
   name: Option[String] = None,
   deleted: Option[Boolean] = None,
   color: Option[String] = None,
-  realName: Option[String] = None,
+  real_name: Option[String] = None,
   tz: Option[String] = None,
-  tzLabel: Option[String] = None,
-  tzOffset: Option[String] = None,
+  tz_label: Option[String] = None,
+  tz_offset: Option[Int] = None,
   profile: Option[Profile] = None,
-  isAdmin: Option[Boolean] = None,
-  isOwner: Option[Boolean] = None,
-  isPrimaryOwner: Option[Boolean] = None,
-  isRestricted: Option[Boolean] = None,
-  isUltraRestricted: Option[Boolean] = None,
-  isBot: Option[Boolean] = None,
+  is_admin: Option[Boolean] = None,
+  is_owner: Option[Boolean] = None,
+  is_primary_owner: Option[Boolean] = None,
+  is_restricted: Option[Boolean] = None,
+  is_ultra_restricted: Option[Boolean] = None,
+  is_bot: Option[Boolean] = None,
   updated: Option[Int] = None,
-  has2fa: Option[Boolean] = None,
-  isAppUser: Option[Boolean] = None
+  has_2fa: Option[Boolean] = None,
+  is_app_user: Option[Boolean] = None
 )
 
 case class Profile(
-  firstName: Option[String] = None,
-  lastName: Option[String] = None,
-  avatarHash: Option[String] = None,
-  statusText: Option[String] = None,
-  statusEmoji: Option[String] = None,
-  realName: Option[String] = None,
-  displayName: Option[String] = None,
-  realNameNormalized: Option[String] = None,
-  displayNameNormalized: Option[String] = None,
+  first_name: Option[String] = None,
+  last_name: Option[String] = None,
+  avatar_hash: Option[String] = None,
+  status_text: Option[String] = None,
+  status_emoji: Option[String] = None,
+  real_name: Option[String] = None,
+  display_name: Option[String] = None,
+  real_name_normalized: Option[String] = None,
+  display_name_normalized: Option[String] = None,
   email: Option[String] = None,
   team: Option[String] = None,
-  alwaysActive: Option[String] = None,
+  always_active: Option[Boolean] = None,
   phone: Option[String] = None,
-  skype: Option[String] = None
+  skype: Option[String] = None,
+  title: Option[String] = None
 )
 
-case class Metadata(nextCursor: Option[String] = None)
+case class Metadata(next_cursor: Option[String] = None)
 
 object Metadata {
   implicit val metadataResponseFormat = Json.format[Metadata]

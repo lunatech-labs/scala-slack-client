@@ -125,7 +125,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
   }
 
   /**
-    * https://slack.com/api/channels.list
+    * https://api.slack.com/methods/channels.list
     */
   def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
     limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
@@ -177,20 +177,20 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
   }
 
   /**
-    * https://slack.com/api/users.info
+    * https://api.slack.com/methods/users.info
     */
-  def userInfo(user: String, includeLocale: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UserInfo] = {
+  def userInfo(user: String, includeLocale: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[User] = {
     val params: Map[String, String] = Map("user" -> user, "include_locale" -> includeLocale.getOrElse(false).toString)
 
     slackCaller.makeGetApiCall(token, config.userInfoUrl, params)
       .flatMap(response => SlackClient.jsonToClass[UserInfo](response.body) match {
-        case Success(s) => Future.successful(s)
+        case Success(s) => Future.successful(s.user)
         case Failure(e) => Future.failed(e)
       })
   }
 
   /**
-    * https://slack.com/api/users.list
+    * https://api.slack.com/methods/users.list
     */
   def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None
     , presence: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UsersList] = {
@@ -228,7 +228,7 @@ object SlackClient {
 
   def apply(token: String, slackCaller: SlackCaller): SlackClient = new SlackClient(token, SlackConfig.getSlackClientConfig, slackCaller)
 
-  private[api] def jsonToClass[T](response: String)(implicit ec: ExecutionContext, reads: Reads[T]) = {
+  private[api] def jsonToClass[T](response: String)(implicit reads: Reads[T]) = {
     val jsonResponse = Json.parse(response)
 
     (jsonResponse \ "ok").validate[Boolean] match {
