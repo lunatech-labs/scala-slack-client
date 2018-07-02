@@ -1,0 +1,87 @@
+apply plugin: 'scala'
+apply plugin: 'maven'
+apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile 'org.scala-lang:scala-library:2.11.8'
+    compile 'com.typesafe.play:play-ahc-ws-standalone_2.12:2.0.0-M2'
+    compile 'com.typesafe.play:play-ws-standalone-xml_2.12:2.0.0-M2'
+    compile 'com.typesafe.play:play-ws-standalone-json_2.12:2.0.0-M2'
+}
+
+def isMavenDeployable = hasProperty('mavenRepositoryUrl') &&
+        hasProperty('mavenRepositoryUsername') &&
+        hasProperty('mavenRepositoryPassword')
+
+if (isMavenDeployable) {
+    signing {
+        sign configurations.archives
+    }
+
+    task scaladocJar(type: Jar, dependsOn: scaladoc) {
+        classifier = 'javadoc'
+        from "${project.buildDir}/docs/scaladoc"
+    }
+
+    task sourceJar(type: Jar, dependsOn: classes) {
+        classifier = 'sources'
+        from sourceSets.main.allSource
+    }
+
+    artifacts {
+        archives jar
+        archives scaladocJar
+        archives sourceJar
+    }
+
+    uploadArchives {
+        repositories {
+            mavenDeployer {
+                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+                repository(url: mavenRepositoryUrl) {
+                    authentication(userName: mavenRepositoryUsername, password: mavenRepositoryPassword)
+                }
+
+                pom.project {
+                    description "A Scala library to interact with the Slack API"
+                    groupId "com.lunatech"
+                    name "scala-slack-client"
+                    packaging 'jar'
+                    url "https://github.com/lunatech-labs/scala-slack-client"
+                    version "0.1.0"
+
+                    developers {
+                        developer {
+                            id 'kistria'
+                            name 'Kévin Istria'
+                        }
+                        developer {
+                            id 'kherizo'
+                            name 'Herizo Kerharo'
+                        }
+                    }
+
+                    licenses {
+                        license {
+                            name 'Apache License v2.0'
+                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            distribution 'repo'
+                        }
+                    }
+
+                    scm {
+                        url "https://github.com/lunatech-labs/scala-slack-client.git"
+                        connection "https://github.com/lunatech-labs/scala-slack-client.git"
+                    }
+                }
+            }
+        }
+    }
+}

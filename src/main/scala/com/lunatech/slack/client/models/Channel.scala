@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class Channels(
   channels: Option[Seq[Channel]] = None,
   response_metadata: Option[Metadata] = None
@@ -27,6 +29,7 @@ case class Channel(
   topic: Option[Topic] = None,
   purpose: Option[Purpose] = None,
   previous_names: Option[Seq[String]] = None,
+  num_members: Option[Int] = None
 )
 
 case class Latest(
@@ -56,3 +59,27 @@ case class Purpose(
   creator: Option[String] = None,
   last_set: Option[Int] = None
 )
+
+object Purpose {
+  implicit val purposeFormat = Json.format[Purpose]
+}
+
+object Topic {
+  implicit val topicFormat = Json.format[Topic]
+}
+
+object ChannelAttachments {
+  implicit val channelAttachmentsFormat = Json.format[ChannelAttachments]
+}
+
+object Latest {
+  implicit val latestFormat = Json.format[Latest]
+}
+
+object Channel {
+  implicit val channelFormat = Json.format[Channel]
+}
+
+object Channels {
+  implicit val channelsFormat = Json.format[Channels]
+}

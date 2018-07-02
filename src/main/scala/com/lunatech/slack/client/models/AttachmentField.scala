@@ -1,5 +1,7 @@
 package com.lunatech.slack.client.models
 
+import play.api.libs.json.Json
+
 case class Field(title: String, value: String, short: Boolean = false) {
   def asShort: Field = copy(short = true)
 }
@@ -7,7 +9,7 @@ case class Field(title: String, value: String, short: Boolean = false) {
 case class AttachmentField(
   fallback: String,
   callback_id: String,
-  actions: Seq[ActionField],
+  actions: Option[Seq[ActionField]] = None,
   text: Option[String] = None,
   title: Option[String] = None,
   id: Option[Int] = None,
@@ -35,7 +37,7 @@ case class AttachmentField(
 
   def withColor(color: String): AttachmentField = copy(color = Some(color))
 
-  def addAction(actionField: ActionField): AttachmentField = copy(actions = actions :+ actionField)
+  def addAction(actionField: ActionField): AttachmentField = copy(actions = Some(actions.getOrElse(Seq()) :+ actionField))
 
   def withAuthorName(authorName: String): AttachmentField = copy(author_name = Some(authorName))
 
@@ -51,6 +53,8 @@ case class AttachmentField(
 
   def withPretext(text: String): AttachmentField = copy(pretext = Some(text))
 
+  def withFooter(text: String): AttachmentField = copy(footer = Some(text))
+
   def addField(field: Field): AttachmentField = {
     fields match {
       case Some(fs) => copy(fields = Some(fs :+ field))
@@ -59,9 +63,16 @@ case class AttachmentField(
   }
 }
 
+object Field {
+  implicit val fieldFormat = Json.format[Field]
+}
+
 object AttachmentField {
+  implicit val attachmentFieldFormat = Json.format[AttachmentField]
+
   def apply(
     fallback: String,
     callback_id: String
-  ): AttachmentField = new AttachmentField(fallback, callback_id, List())
+  ): AttachmentField = new AttachmentField(fallback, callback_id)
 }
+
