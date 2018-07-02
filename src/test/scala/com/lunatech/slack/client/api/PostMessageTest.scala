@@ -4,8 +4,6 @@ import com.lunatech.slack.client.models.{AttachmentResponse, EmbeddedMessageResp
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class PostMessageTest extends FlatSpec {
 
   it should "parse json to MessageResponse" in {

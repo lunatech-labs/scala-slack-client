@@ -4,8 +4,6 @@ import com.lunatech.slack.client.models.Permalink
 import org.scalatest.FlatSpec
 import org.scalatest.Matchers._
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class GetPermalinkTest extends FlatSpec {
 
   it should "parse json to Permalink" in {

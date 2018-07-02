@@ -22,7 +22,7 @@ case class Payload(
 
 case class Message(
   text: Option[String] = None,
-  attachments: Option[Seq[AttachmentField]],
+  attachments: Option[Seq[AttachmentField]] = None,
   channel: Option[String] = None,
   thread_ts: Option[String] = None,
   bot_id: Option[String] = None,

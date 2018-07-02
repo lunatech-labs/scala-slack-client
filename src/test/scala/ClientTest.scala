@@ -71,7 +71,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField("Menu", "The menu").asMenu(fields).withConfirmation("Are you sure ?"))
+      Some(List(ActionField("Menu", "The menu").asMenu(fields).withConfirmation("Are you sure ?")))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)
@@ -85,7 +85,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing users") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField("User menu", "Users").asUserMenu())
+      Some(List(ActionField("User menu", "Users").asUserMenu()))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing users").addAttachment(attachment)
@@ -99,7 +99,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing channels") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField("Channels menu", "Channels").asChannelMenu())
+      Some(List(ActionField("Channels menu", "Channels").asChannelMenu()))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing channels").addAttachment(attachment)
@@ -113,7 +113,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      List(ActionField("Channels menu", "Converations").asConversationMenu())
+      Some(List(ActionField("Channels menu", "Converations").asConversationMenu()))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)
