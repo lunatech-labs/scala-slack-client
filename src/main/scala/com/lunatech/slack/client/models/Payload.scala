@@ -33,7 +33,18 @@ case class Message(
   ts: Option[String] = None,
   replace_original: Option[Boolean] = None,
   delete_original: Option[Boolean] = None
-)
+) {
+
+  def addAttachment(attachmentField: AttachmentField): Message = copy(attachments = Some(attachments.getOrElse(Seq() :+ attachmentField)))
+
+  def toChannel(channel: String): Message = copy(channel = Some(channel))
+
+  def withThreadTs(channel: String): Message = copy(thread_ts = Some(channel))
+
+  def andReplaceOriginal : Message = copy(replace_original = Some(true))
+
+  def andDeleteOriginal : Message = copy(delete_original = Some(true))
+}
 
 case class TeamField(id: String, domain: String)
 
@@ -66,6 +77,8 @@ object TeamField {
 
 object Message {
   implicit val messageFormat = Json.format[Message]
+
+  def apply(text: String): Message = new Message(text = Some(text))
 }
 
 object Payload {
