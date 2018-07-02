@@ -20,7 +20,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     val params: Map[String, String] = Map("channel" -> channel, "message_ts" -> messageTs)
 
     slackCaller.makeGetApiCall(token, config.getPermalinkMessageUrl, params)
-      .flatMap(response => SlackClient.jsonToClass[PermaLink](response.body))
+      .flatMap(response => SlackClient.jsonToClass[PermaLink](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
 
@@ -29,7 +32,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     */
   def postMessage(message: ChatMessage)(implicit ec: ExecutionContext): Future[MessageResponse] = {
     slackCaller.makeApiCall(token, config.postMessageUrl, Json.toJson(message))
-      .flatMap(response => SlackClient.jsonToClass[MessageResponse](response.body))
+      .flatMap(response => SlackClient.jsonToClass[MessageResponse](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   type MessageTs = String
@@ -67,7 +73,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "ts" -> ts,
         "as_user" -> asUser,
       ))
-      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body))
+      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   /**
@@ -107,7 +116,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "link_names" -> linkNames,
         "parse" -> parse
       ))
-      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body))
+      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   /**
@@ -119,7 +131,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "channel" -> channel,
         "text" -> text
       ))
-      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body))
+      .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   /**
@@ -133,7 +148,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "exclude_archived" -> excludeArchived,
         "exclude_members" -> excludeMembers,
         "limit" -> limit
-      )).flatMap(response => SlackClient.jsonToClass[Channels](response.body))
+      )).flatMap(response => SlackClient.jsonToClass[Channels](response.body) match {
+      case Success(s) => Future.successful(s)
+      case Failure(e) => Future.failed(e)
+    })
   }
 
   /**
@@ -196,7 +214,10 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     val params: Map[String, String] = Map("user" -> user, "include_locale" -> includeLocale.getOrElse(false).toString)
 
     slackCaller.makeGetApiCall(token, config.userInfoUrl, params)
-      .flatMap(response => SlackClient.jsonToClass[UserInfo](response.body))
+      .flatMap(response => SlackClient.jsonToClass[UserInfo](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   /**
@@ -208,18 +229,21 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
     slackCaller.makeGetApiCall(token, config.usersListUrl, params)
-      .flatMap(response => SlackClient.jsonToClass[UsersList](response.body))
+      .flatMap(response => SlackClient.jsonToClass[UsersList](response.body) match {
+        case Success(s) => Future.successful(s)
+        case Failure(e) => Future.failed(e)
+      })
   }
 
   /**
     * https://api.slack.com/methods/users.lookupByEmail
     */
-  def userLookupByEmail(email: String)(implicit ec: ExecutionContext): Future[UserInfo] = {
+  def userLookupByEmail(email: String)(implicit ec: ExecutionContext): Future[User] = {
     val params: Map[String, String] = Map("email" -> email)
 
     slackCaller.makeGetApiCall(token, config.userLookupByEmailUrl, params)
       .flatMap(response => SlackClient.jsonToClass[UserInfo](response.body) match {
-        case Success(s) => Future.successful(s)
+        case Success(s) => Future.successful(s.user)
         case Failure(e) => Future.failed(e)
       })
   }
