@@ -9,7 +9,7 @@ An asynchronous Scala library to interact with the Slack [API](https://api.slack
 Add this dependency in your build.sbt
 
 ```
-libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.1.0"
+libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.1.1"
 ```
 
 ## How to Use
@@ -40,11 +40,11 @@ We provide builders to make your message easier to write.
 If you want to write a message with buttons you can write it like this. (See [slack documention](https://api.slack.com/methods/chat.postMessage) for more information)
 
 ```scala
-val message = ChatMessage("#general", "this is a message with ChatMessage")
-      .addAttachment(AttachmentField("update your API", "buttons")
-        .addAction(ActionField("PrimaryButton", "Primary button").asPrimaryButton))
-        .addAction(ActionField("DefaultButton", "Default button"))
-        .addAction(ActionField("DangerButton", "DangerButton").asDangerButton.withConfirmation("Are you sure"))
+val message = ChatMessage(channel = "#general", text = "this is a message with ChatMessage")
+      .addAttachment(AttachmentField(fallback = "update your API", callback_id = "buttons")
+        .addAction(ActionField(name = "PrimaryButton", text = "Primary button").asPrimaryButton))
+        .addAction(ActionField(name = "DefaultButton", text = "Default button"))
+        .addAction(ActionField(name = "DangerButton", text = "DangerButton").asDangerButton.withConfirmation("Are you sure"))
         .withPretext("Click one of these button")
       )
 

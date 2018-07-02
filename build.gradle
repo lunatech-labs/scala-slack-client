@@ -50,28 +50,31 @@ if (isMavenDeployable) {
                 }
 
                 pom.project {
-                    description "A Scala library to interact with the Slack API"
+                    description "An asynchronous Scala library to interact with the Slack API."
                     groupId "com.lunatech"
                     name "scala-slack-client"
                     packaging 'jar'
                     url "https://github.com/lunatech-labs/scala-slack-client"
-                    version "0.1.0"
+                    version "0.1.1"
 
                     developers {
                         developer {
                             id 'kistria'
                             name 'Kévin Istria'
+                            email 'kevin.istria@lunatech.com'
+                            organization 'https://www.lunatech.com/'
                         }
                         developer {
                             id 'kherizo'
                             name 'Herizo Kerharo'
+                            email 'herizo.kerharo@lunatech.com'
+                            organization 'https://www.lunatech.com/'
                         }
                     }
 
                     licenses {
                         license {
-                            name 'Apache License v2.0'
-                            url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                            name 'MIT Licence'
                             distribution 'repo'
                         }
                     }
