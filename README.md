@@ -1,6 +1,6 @@
 # scala-slack-client
 
-A Scala library to interact with the Slack [API](https://api.slack.com) as of June 2018.
+An asynchronous Scala library to interact with the Slack [API](https://api.slack.com) as of June 2018.
 
 [ ![Codeship Status for lunatech-labs/scala-slack-client](https://app.codeship.com/projects/0a9404a0-5ce4-0136-2cc1-460bed3baf8d/status?branch=master)](https://app.codeship.com/projects/295784)
 
@@ -50,15 +50,6 @@ val message = ChatMessage("#general", "this is a message with ChatMessage")
 
 slackClient.postMessage(message)
 ```
-
-Although, you can give directly your information.
-
-```scala
-val attachment = AttachmentField(...)
-
-slackClient.postMessage(channel = "#general", text = "Hello", attachments = Some(List(attachment)))
-```
-
 All methods can be used the same way.
 
 ## Implemented methods
