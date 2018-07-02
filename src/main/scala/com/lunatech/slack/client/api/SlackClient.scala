@@ -24,7 +24,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     val params: Map[String, String] = Map("channel" -> channel, "message_ts" -> messageTs)
 
     slackCaller.makeGetApiCall(token, config.getPermalinkMessageUrl, params)
-      .flatMap(response => SlackClient.jsonToClass[PermaLink](response.body) match {
+      .flatMap(response => SlackClient.jsonToClass[Permalink](response.body) match {
         case Success(s) => Future.successful(s)
         case Failure(e) => Future.failed(e)
       })
@@ -63,7 +63,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
       Json.obj(
         "channel" -> channel,
         "ts" -> ts,
-        "as_user" -> asUser,
+        "as_user" -> asUser
       ))
       .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body) match {
         case Success(c) => Future.successful(c)
