@@ -2,8 +2,8 @@ package com.lunatech.slack.client.models
 
 import play.api.libs.json.Json
 
-case class PermaLink(channel: Option[String] = None, permaLink: Option[String] = None)
+case class Permalink(channel: Option[String] = None, permalink: Option[String] = None)
 
-object PermaLink {
-  implicit val permaLinkFormat = Json.format[PermaLink]
+object Permalink {
+  implicit val permalinkFormat = Json.format[Permalink]
 }

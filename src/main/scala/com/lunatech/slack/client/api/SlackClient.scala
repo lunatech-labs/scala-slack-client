@@ -2,21 +2,25 @@ package com.lunatech.slack.client.api
 
 import akka.actor.ActorSystem
 import akka.stream.{ActorMaterializer, Materializer}
-import com.lunatech.slack.client.models.{ChatMessage, MessageResponse, _}
+import com.lunatech.slack.client.models.{ChannelResponse, ChatMessage, MessageResponse, MessageTs, UserInfo, UsersList, _}
 import com.lunatech.slack.client.services.SlackCaller
 import play.api.libs.json._
-import play.api.libs.ws.StandaloneWSResponse
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success, Try}
+import scala.util.{Failure, Success}
 
 
 class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCaller)(implicit system: ActorSystem, materializer: Materializer) {
+  implicit val formatUnit: OFormat[Unit] = new OFormat[Unit] {
+    def reads(js: JsValue): JsResult[Unit] = JsSuccess(())
+
+    def writes(a: Unit): JsObject = Json.obj()
+  }
 
   /**
-    * https://slack.com/api/chat.getPermalink
+    * https://api.slack.com/methods/chat.getPermalink
     */
-  def getPermalinkMessage(channel: String, messageTs: String)(implicit ec: ExecutionContext): Future[PermaLink] = {
+  def getPermalinkMessage(channel: String, messageTs: String)(implicit ec: ExecutionContext): Future[Permalink] = {
     val params: Map[String, String] = Map("channel" -> channel, "message_ts" -> messageTs)
 
     slackCaller.makeGetApiCall(token, config.getPermalinkMessageUrl, params)
@@ -38,33 +42,21 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
       })
   }
 
-  type MessageTs = String
-
   /**
-    * https://slack.com/api/chat.postEphemeral
+    * https://api.slack.com/methods/chat.postEphemeral
     */
   def postEphemeral(chatEphemeral: ChatEphemeral)(implicit ec: ExecutionContext): Future[MessageTs] = {
     slackCaller.makeApiCall(token, config.postEphemeralUrl, Json.toJson(chatEphemeral))
       .flatMap { response =>
-        val bodyJson = Json.parse(response.body)
-        (bodyJson \ "ok").validate[Boolean] match {
-          case JsSuccess(true, _) =>
-            (bodyJson \ "message_ts").validate[String] match {
-              case JsSuccess(message, _) => Future.successful(message)
-              case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
-            }
-          case JsSuccess(false, _) =>
-            (bodyJson \ "error").validate[String] match {
-              case JsSuccess(error, _)=> Future.failed(new Exception(s"Error: $error"))
-              case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
-            }
-          case _ => Future.failed(new Exception(s"This is not the response expected : ${response.body}"))
+        SlackClient.jsonToClass[MessageTs](response.body) match {
+          case Success(c) => Future.successful(c)
+          case Failure(error) => Future.failed(error)
         }
       }
   }
 
   /**
-    * https://slack.com/api/chat.delete
+    * https://api.slack.com/methods/chat.delete
     */
   def deleteMessage(channel: String, ts: String, asUser: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
     slackCaller.makeApiCall(token, config.deleteMessageUrl,
@@ -74,13 +66,13 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "as_user" -> asUser,
       ))
       .flatMap(response => SlackClient.jsonToClass[ChatResponse](response.body) match {
-        case Success(s) => Future.successful(s)
-        case Failure(e) => Future.failed(e)
+        case Success(c) => Future.successful(c)
+        case Failure(error) => Future.failed(error)
       })
   }
 
   /**
-    * https://slack.com/api/dialog.open
+    * https://api.slack.com/methods/dialog.open
     */
   def openDialog(dialog: Dialog, triggerId: String)(implicit ec: ExecutionContext): Future[Unit] = {
     slackCaller.makeApiCall(token, config.openDialogUrl,
@@ -89,23 +81,18 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "trigger_id" -> triggerId
       )
     ).flatMap(response => {
-      val jsonBody = Json.parse(response.body)
-      (jsonBody \ "ok").validate[Boolean] match {
-        case JsSuccess(ok, _) if ok => Future.successful(())
-        case _ =>
-          (jsonBody \ "error").validateOpt[String] match {
-            case JsSuccess(err, _) => Future.failed(new Exception(s"Error: $err"))
-            case _ => Future.failed(new Exception("There was an error with the query response"))
-          }
+      SlackClient.jsonToClass[Unit](response.body) match {
+        case Success(c) => Future.successful(c)
+        case Failure(error) => Future.failed(error)
       }
     })
   }
 
   /**
-    * https://slack.com/api/chat.update
+    * https://api.slack.com/methods/chat.update
     */
   def updateMessage(channel: String, text: String, ts: String, asUser: Option[Boolean] = None, attachments: Option[Seq[AttachmentField]] = None,
-                    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
+    linkNames: Option[Boolean] = None, parse: Option[String] = None)(implicit ec: ExecutionContext): Future[ChatResponse] = {
     slackCaller.makeApiCall(token, config.updateMessageUrl,
       Json.obj(
         "channel" -> channel,
@@ -141,7 +128,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     * https://slack.com/api/channels.list
     */
   def channelList(cursor: Option[String] = None, excludeArchived: Option[Boolean] = None, excludeMembers: Option[Boolean] = None,
-                  limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
+    limit: Option[Int] = None)(implicit ec: ExecutionContext): Future[Channels] = {
     slackCaller.makeApiCall(token, config.channelListUrl,
       Json.obj(
         "cursor" -> cursor,
@@ -155,7 +142,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
   }
 
   /**
-    * https://slack.com/api/im.close
+    * https://api.slack.com/methods/im.close
     */
   def imClose(channel: String)(implicit ec: ExecutionContext): Future[Unit] = {
     slackCaller.makeApiCall(token, config.imCloseUrl,
@@ -163,26 +150,17 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         "channel" -> channel
       ))
       .flatMap { response =>
-        handleResponse(response)
+        SlackClient.jsonToClass[Unit](response.body) match {
+          case Success(c) => Future.successful(c)
+          case Failure(error) => Future.failed(error)
+        }
       }
   }
 
-  private def handleResponse(response: StandaloneWSResponse) = {
-    val jsonBody = Json.parse(response.body)
-    (jsonBody \ "ok").validate[Boolean] match {
-      case JsSuccess(ok, _) if ok => Future.successful(())
-      case _ =>
-        (jsonBody \ "error").validate[String] match {
-          case JsSuccess(err, _) => Future.failed(new Exception(s"Error: $err"))
-          case _ => Future.failed(new Exception("There was an error with the query response"))
-        }
-    }
-  }
-
   /**
-    * https://slack.com/api/im.open
+    * https://api.slack.com/methods/im.open
     */
-  def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[String] = {
+  def imOpen(user: String, includeLocale: Option[Boolean] = None, returnIm: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[ChannelResponse] = {
     val response = slackCaller.makeApiCall(token, config.imOpenUrl,
       Json.obj(
         "user" -> user,
@@ -191,18 +169,9 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
       ))
 
     response.flatMap { response =>
-      val jsonBody = Json.parse(response.body)
-      (jsonBody \ "ok").validate[Boolean] match {
-        case JsSuccess(ok, _) if ok =>
-          (jsonBody \ "channel" \ "id").validate[String] match {
-            case JsSuccess(channelId, _) => Future.successful(channelId)
-            case _ => Future.failed(new Exception("An error has occurred"))
-          }
-        case _ =>
-          (jsonBody \ "error").validate[String] match {
-            case JsSuccess(err, _) => Future.failed(new Exception(s"Error: $err"))
-            case _ => Future.failed(new Exception("There was an error with the query response"))
-          }
+      SlackClient.jsonToClass[ChannelResponse](response.body) match {
+        case Success(c) => Future.successful(c)
+        case Failure(error) => Future.failed(error)
       }
     }
   }
@@ -224,7 +193,7 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
     * https://slack.com/api/users.list
     */
   def usersList(cursor: Option[String] = None, includeLocale: Option[Boolean] = None, limit: Option[Int] = None
-                , presence: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UsersList] = {
+    , presence: Option[Boolean] = None)(implicit ec: ExecutionContext): Future[UsersList] = {
     val params: Map[String, String] = Map("cursor" -> cursor.getOrElse(""), "include_locale" -> includeLocale.getOrElse(false).toString,
       "limit" -> limit.toString, "presence" -> presence.getOrElse(false).toString)
 
@@ -247,8 +216,6 @@ class SlackClient(token: String, config: SlackClientConfig, slackCaller: SlackCa
         case Failure(e) => Future.failed(e)
       })
   }
-
-
 }
 
 object SlackClient {
@@ -265,13 +232,13 @@ object SlackClient {
     val jsonResponse = Json.parse(response)
 
     (jsonResponse \ "ok").validate[Boolean] match {
-      case JsSuccess(ok, _) if ok => Json.fromJson[T](jsonResponse) match {
+      case JsSuccess(true, _) => Json.fromJson[T](jsonResponse) match {
         case JsSuccess(classFromJson, _) => Success(classFromJson)
         case JsError(error) => Failure(new Exception(s"Bad json format : $error"))
       }
       case _ => (jsonResponse \ "error").validate[String] match {
         case JsSuccess(err, _) => Failure(new Exception(s"Error: $err"))
-        case _ => Failure(new Exception("An error has occurred"))
+        case JsError(error) => Failure(new Exception(s"Bad json format : $error"))
       }
     }
   }

@@ -45,7 +45,7 @@ class ClientTest extends FunSuite {
     val ephemeralMessage = ChatEphemeral(channel, "This is an ephemeral message", userId)
     val response = Await.result(client.postEphemeral(ephemeralMessage), Duration.create(20, "s"))
 
-    response shouldBe an[MessageResponse]
+    response shouldBe an[MessageTs]
   }
 
   test("Slack client should send a message to a channel with buttons") {
@@ -148,7 +148,7 @@ class ClientTest extends FunSuite {
     val ts = sendMessage.ts.getOrElse("")
     val response = Await.result(client.getPermalinkMessage(channel, ts), Duration.create(20, "s"))
 
-    response shouldBe an[PermaLink]
+    response shouldBe an[Permalink]
   }
 
   test("Slack client should return a list of all channels") {
@@ -162,13 +162,13 @@ class ClientTest extends FunSuite {
   }
 
   test("Slack client should open a direct message channel") {
-    Await.result(client.imOpen(userId), Duration.create(20, "s")) shouldBe an[String]
+    Await.result(client.imOpen(userId), Duration.create(20, "s")) shouldBe an[ChannelResponse]
   }
 
   test("Slack client should close a direct message channel") {
     val openChannel = Await.result(client.imOpen(userId, None, Some(true)), Duration.create(20, "s"))
 
-    Await.result(client.imClose(openChannel), Duration.create(20, "s")) shouldBe an[BoxedUnit]
+    Await.result(client.imClose(openChannel.channel.id), Duration.create(20, "s")) shouldBe an[BoxedUnit]
   }
 
   test("Slack client should return information about a user") {
