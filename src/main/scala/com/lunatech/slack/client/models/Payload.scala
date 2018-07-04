@@ -35,7 +35,7 @@ case class Message(
   delete_original: Option[Boolean] = None
 ) {
 
-  def addAttachment(attachmentField: AttachmentField): Message = copy(attachments = Some(attachments.getOrElse(Seq() :+ attachmentField)))
+  def addAttachment(attachmentField: AttachmentField): Message = copy(attachments = Some(attachments.getOrElse(Seq()) :+ attachmentField))
 
   def toChannel(channel: String): Message = copy(channel = Some(channel))
 
