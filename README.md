@@ -55,9 +55,9 @@ If you want to write a message with buttons you can write it like this. (See [sl
 ```scala
 val message = ChatMessage(channel = "#general", text = "this is a message with ChatMessage")
       .addAttachment(AttachmentField(fallback = "update your API", callback_id = "buttons")
-        .addAction(ActionField(name = "PrimaryButton", text = "Primary button").asPrimaryButton))
-        .addAction(ActionField(name = "DefaultButton", text = "Default button"))
-        .addAction(ActionField(name = "DangerButton", text = "DangerButton").asDangerButton.withConfirmation("Are you sure"))
+        .addAction(Button(name = "PrimaryButton", text = "Primary button").asPrimaryButton))
+        .addAction(Button(name = "DefaultButton", text = "Default button"))
+        .addAction(Button(name = "DangerButton", text = "DangerButton").asDangerButton.withConfirmation(ConfirmField("Are you sure")))
         .withPretext("Click one of these button")
       )
 
