@@ -9,7 +9,7 @@ case class Field(title: String, value: String, short: Boolean = false) {
 case class AttachmentField(
   fallback: String,
   callback_id: String,
-  actions: Seq[ActionField],
+  actions: Option[Seq[ActionField]] = None,
   text: Option[String] = None,
   title: Option[String] = None,
   id: Option[Int] = None,
@@ -69,10 +69,5 @@ object Field {
 
 object AttachmentField {
   implicit val attachmentFieldFormat = Json.format[AttachmentField]
-
-  def apply(
-    fallback: String,
-    callback_id: String
-  ): AttachmentField = new AttachmentField(fallback, callback_id)
 }
 

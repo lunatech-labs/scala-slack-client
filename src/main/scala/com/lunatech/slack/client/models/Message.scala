@@ -2,19 +2,6 @@ package com.lunatech.slack.client.models
 
 import play.api.libs.json.Json
 
-case class ActionsField(
-  name: String,
-  `type`: String,
-  selected_options: Option[Seq[SelectedOption]],
-  value: Option[String],
-)
-
-case class SelectedOption(value: String)
-
-case class TeamField(id: String, domain: String)
-
-case class NameField(id: String, name: String)
-
 case class ConfirmField(
   text: String,
   title: Option[String] = None,
@@ -24,10 +11,12 @@ case class ConfirmField(
 
 case class OptionGroupsField(
   text: String,
-  options: Seq[BasicField]
-)
+  options: Option[Seq[BasicField]] = None
+){
+  def addOption(text: String, value: String, description: Option[String] = None): OptionGroupsField =
+    copy(options = Some(options.getOrElse(Seq()) :+ BasicField(text, value, description)))
 
-case class OptionField(options: Seq[BasicField])
+}
 
 case class BasicField(text: String, value: String, description: Option[String] = None)
 
@@ -99,10 +88,6 @@ object BasicField {
 
 object ConfirmField {
   implicit val confirmFieldFormat = Json.format[ConfirmField]
-}
-
-object OptionField {
-  implicit val optionFieldFormat = Json.format[OptionField]
 }
 
 object OptionGroupsField {

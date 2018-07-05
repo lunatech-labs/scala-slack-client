@@ -44,6 +44,10 @@ case class Message(
   def andReplaceOriginal : Message = copy(replace_original = Some(true))
 
   def andDeleteOriginal : Message = copy(delete_original = Some(true))
+
+  def asInChannel : Message = copy(response_type = Some("in_channel"))
+
+  def asEphemeral : Message = copy(response_type = Some("ephemeral"))
 }
 
 case class TeamField(id: String, domain: String)
