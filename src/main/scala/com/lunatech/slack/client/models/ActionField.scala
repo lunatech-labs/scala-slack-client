@@ -1,67 +1,30 @@
 package com.lunatech.slack.client.models
 
-import play.api.libs.json.Json
+import play.api.libs.json._
 
-case class ActionField(
-  name: String,
-  text: String,
-  `type`: String = "button",
-  id: Option[String] = None,
-  value: Option[String] = None,
-  confirm: Option[ConfirmField] = None,
-  style: Option[String] = None,
-  data_source: Option[String] = None,
-  options: Option[Seq[BasicField]] = None,
-  option_groups: Option[Seq[OptionGroupsField]] = None,
-  min_query_length: Option[Int] = None,
-  selected_options: Option[Seq[OptionField]] = None
-) {
-
-  def withConfirmation(confirmField: ConfirmField): ActionField = copy(confirm = Some(confirmField))
-
-  def withConfirmation(text: String, title: Option[String] = None, ok_text: Option[String] = None, dismiss_text: Option[String] = None): ActionField = {
-    withConfirmation(ConfirmField(text, title, ok_text, dismiss_text))
-  }
-
-  def withId(id: String): ActionField = copy(id = Some(id))
-
-  def withValue(value: String): ActionField = copy(value = Some(value))
-
-  def asDefaultButton: ActionField = copy(style = Some("default"), `type` = "button")
-
-  def asPrimaryButton: ActionField = copy(style = Some("primary"), `type` = "button")
-
-  def asDangerButton: ActionField = copy(style = Some("danger"), `type` = "button")
-
-  def asMenu(fields: Seq[BasicField], selectedOptions: Option[Seq[OptionField]] = None): ActionField = copy(`type` = "select", options = Some(fields), selected_options = selectedOptions)
-
-  def asMenuWithGroupOption(fields: Seq[OptionGroupsField], selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
-    copy(`type` = "select", option_groups = Some(fields), selected_options = selectedOptions)
-  }
-
-  def asChannelMenu(selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
-    copy(`type` = "select", data_source = Some("channels"), selected_options = selectedOptions)
-  }
-
-  def asUserMenu(selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
-    copy(`type` = "select", data_source = Some("users"), selected_options = selectedOptions)
-  }
-
-  def asConversationMenu(selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
-    copy(`type` = "select", data_source = Some("conversation"), selected_options = selectedOptions)
-  }
-
-  def asExternalMenu(minQueryLength: Option[Int] = None, selectedOptions: Option[Seq[OptionField]] = None): ActionField = {
-    copy(`type` = "select", data_source = Some("external"), selected_options = selectedOptions, min_query_length = minQueryLength)
-  }
+trait ActionField {
+  val name: String
+  val text: String
+  val `type`: String
+  val confirm: Option[ConfirmField]
+  val id: Option[String]
 }
 
 object ActionField {
-  implicit val actionFieldFormat = Json.format[ActionField]
+  implicit val reads: Reads[ActionField] = (json: JsValue) => {
+    (json \ "type").validate[String] match {
+      case JsSuccess("button", _) => Button.reads.reads(json)
+      case JsSuccess("select", _) => Menu.reads.reads(json)
+      case x: JsError => x
+      case _ => JsError("Unknown action")
+    }
+  }
 
-  def apply(
-    name: String,
-    text: String,
-  ): ActionField =
-    new ActionField(name, text)
+  implicit val writes: Writes[ActionField] = {
+    case x: Button => Button.writes.writes(x)
+    case x: DynamicMenu => DynamicMenu.writes.writes(x)
+    case x: StaticMenu => StaticMenu.writes.writes(x)
+    case x: StaticGroupMenu => StaticGroupMenu.writes.writes(x)
+  }
+
 }

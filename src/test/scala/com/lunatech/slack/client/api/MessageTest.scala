@@ -1,6 +1,6 @@
 package com.lunatech.slack.client.api
 
-import com.lunatech.slack.client.models.{ActionField, AttachmentField, ChatMessage, Field}
+import com.lunatech.slack.client.models._
 import org.scalatest.FlatSpec
 import play.api.libs.json._
 import org.scalatest.Matchers._
@@ -16,8 +16,8 @@ class MessageTest extends FlatSpec {
       .addField(Field(title = "Field 2", value = "This is also short").asShort)
       .addField(Field(title = "Field 3", value = "This is not short"))
       .withFooter("Footer information")
-      .addAction(ActionField(name = "Button", text = "Button"))
-      .addAction(ActionField(name = "Button", text = "Button"))
+      .addAction(Button(name = "Button", text = "Button"))
+      .addAction(Button(name = "Button", text = "Button"))
 
     val json =
       """

@@ -11,10 +11,12 @@ case class ConfirmField(
 
 case class OptionGroupsField(
   text: String,
-  options: Seq[BasicField]
-)
+  options: Option[Seq[BasicField]] = None
+){
+  def addOption(text: String, value: String, description: Option[String] = None): OptionGroupsField =
+    copy(options = Some(options.getOrElse(Seq()) :+ BasicField(text, value, description)))
 
-case class OptionField(options: Seq[BasicField])
+}
 
 case class BasicField(text: String, value: String, description: Option[String] = None)
 
@@ -86,10 +88,6 @@ object BasicField {
 
 object ConfirmField {
   implicit val confirmFieldFormat = Json.format[ConfirmField]
-}
-
-object OptionField {
-  implicit val optionFieldFormat = Json.format[OptionField]
 }
 
 object OptionGroupsField {

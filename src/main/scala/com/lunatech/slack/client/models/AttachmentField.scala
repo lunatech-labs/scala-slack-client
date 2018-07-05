@@ -69,10 +69,5 @@ object Field {
 
 object AttachmentField {
   implicit val attachmentFieldFormat = Json.format[AttachmentField]
-
-  def apply(
-    fallback: String,
-    callback_id: String
-  ): AttachmentField = new AttachmentField(fallback, callback_id)
 }
 

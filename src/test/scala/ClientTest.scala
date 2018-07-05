@@ -28,7 +28,7 @@ class ClientTest extends FunSuite {
   test("Slack client should send a message to a channel (ChatMessage)") {
     val message = ChatMessage(channel, "this is a message with ChatMessage")
       .addAttachment(AttachmentField("update your API", "toto")
-        .addAction(ActionField("Button", "Primary button").asPrimaryButton)
+        .addAction(Button("Button", "Primary button").asPrimaryButton)
         .addField(Field("First Field", "firstvalue", short = true))
         .addField(Field("Seconde Field", "second value", short = true))
         .addField(Field("Long field", "This is a long field"))
@@ -51,9 +51,9 @@ class ClientTest extends FunSuite {
   test("Slack client should send a message to a channel with buttons") {
 
     val attachment = AttachmentField("upgrade your client api", "action_test")
-      .addAction(ActionField("Default button", "Default"))
-      .addAction(ActionField("Primary button", "Primary").asPrimaryButton)
-      .addAction(ActionField("Danger button", "Danger").asDangerButton.withConfirmation("Are you sure ?"))
+      .addAction(Button("Default button", "Default"))
+      .addAction(Button("Primary button", "Primary").asPrimaryButton)
+      .addAction(Button("Danger button", "Danger").asDangerButton.withConfirmation(ConfirmField("Are you sure")))
 
     val chatMessage = ChatMessage(channel, "This is a message with buttons").addAttachment(attachment)
 
@@ -71,7 +71,10 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      Some(List(ActionField("Menu", "The menu").asMenu(fields).withConfirmation("Are you sure ?")))
+      Some(List(StaticMenu("Menu", "The menu")
+        .addOption("First item", "First item")
+        .addOption("Second Item", "Second Item")
+        .withConfirmation(ConfirmField("Are you sure ?"))))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)
@@ -85,7 +88,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing users") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      Some(List(ActionField("User menu", "Users").asUserMenu()))
+      Some(List(DynamicMenu("User menu", "Users", DataSource.users)))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing users").addAttachment(attachment)
@@ -99,7 +102,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing channels") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      Some(List(ActionField("Channels menu", "Channels").asChannelMenu()))
+      Some(List(DynamicMenu("Channels menu", "Channels", DataSource.channels)))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing channels").addAttachment(attachment)
@@ -113,11 +116,11 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      Some(List(ActionField("Channels menu", "Converations").asConversationMenu()))
+      Some(List(DynamicMenu("Channels menu", "Converations", DataSource.conversation)))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)
-
+    
     val response = Await.result(
       client.postMessage(chatMessage), Duration.create(20, "s")
     )

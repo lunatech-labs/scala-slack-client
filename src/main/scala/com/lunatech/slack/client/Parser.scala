@@ -3,44 +3,45 @@ package com.lunatech.slack.client
 import com.lunatech.slack.client.models.Payload
 import play.api.libs.json._
 
-import scala.util.{Failure, Success}
+import scala.util.{Failure, Success, Try}
 
-case class SlashCommandPayload(token: Option[String],
-  team_id: Option[String],
+case class SlashCommandPayload(token: String,
+  channel_id: String,
+  channel_name: String,
+  user_id: String,
+  user_name: String,
+  command: String,
+  response_url: String,
+  trigger_id: String,
   team_domain: Option[String],
   enterprise_id: Option[String],
   enterprise_name: Option[String],
-  channel_id: Option[String],
-  channel_name: Option[String],
-  user_id: Option[String],
-  user_name: Option[String],
-  command: Option[String],
   text: Option[String],
-  response_url: Option[String],
-  trigger_id: Option[String])
+  team_id: Option[String])
 
 object SlashCommandPayload {
   implicit val slashCommandPayloadFormat = Json.format[SlashCommandPayload]
 
-  def from(body: Map[String, String]): SlashCommandPayload =
-    SlashCommandPayload(token = body.get("token"),
+  def from(body: Map[String, String]): Try[SlashCommandPayload] =
+    Try(SlashCommandPayload(
+      token = body("token"),
       team_id = body.get("team_id"),
       team_domain = body.get("team_domain"),
       enterprise_id = body.get("enterprise_id"),
       enterprise_name = body.get("enterprise_name"),
-      channel_id = body.get("channel_id"),
-      channel_name = body.get("channel_name"),
-      user_id = body.get("user_id"),
-      user_name = body.get("user_name"),
-      command = body.get("command"),
+      channel_id = body("channel_id"),
+      channel_name = body("channel_name"),
+      user_id = body("user_id"),
+      user_name = body("user_name"),
+      command = body("command"),
       text = body.get("text"),
-      response_url = body.get("response_url"),
-      trigger_id = body.get("trigger_id")
-    )
+      response_url = body("response_url"),
+      trigger_id = body("trigger_id")
+    ))
 }
 
 object Parser {
-  def slashCommand(body: Map[String, Seq[String]]): SlashCommandPayload = {
+  def slashCommand(body: Map[String, Seq[String]]): Try[SlashCommandPayload] = {
 
     val m = body.collect {
       case (k, v) if v.length == 1 => k -> v.head
@@ -49,7 +50,7 @@ object Parser {
     SlashCommandPayload.from(m)
   }
 
-  def getPayload(body: Map[String, Seq[String]]) = {
+  def getPayload(body: Map[String, Seq[String]]): Try[Payload] = {
     val m = body.collect {
       case (k, v) if v.length == 1 => k -> v.head
     }
