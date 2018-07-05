@@ -16,8 +16,8 @@ case class Payload(
   token: String,
   is_app_unfurl: Option[Boolean],
   original_message: Option[Message],
-  response_url: String,
-  trigger_id: Option[String],
+  response_url: Option[String],
+  trigger_id: Option[String]
 )
 
 case class Message(
@@ -41,13 +41,13 @@ case class Message(
 
   def withThreadTs(channel: String): Message = copy(thread_ts = Some(channel))
 
-  def andReplaceOriginal : Message = copy(replace_original = Some(true))
+  def andReplaceOriginal: Message = copy(replace_original = Some(true))
 
-  def andDeleteOriginal : Message = copy(delete_original = Some(true))
+  def andDeleteOriginal: Message = copy(delete_original = Some(true))
 
-  def asInChannel : Message = copy(response_type = Some("in_channel"))
+  def asInChannel: Message = copy(response_type = Some("in_channel"))
 
-  def asEphemeral : Message = copy(response_type = Some("ephemeral"))
+  def asEphemeral: Message = copy(response_type = Some("ephemeral"))
 }
 
 case class TeamField(id: String, domain: String)

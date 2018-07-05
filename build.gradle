@@ -55,7 +55,7 @@ if (isMavenDeployable) {
                     name "scala-slack-client"
                     packaging 'jar'
                     url "https://github.com/lunatech-labs/scala-slack-client"
-                    version "0.2.1"
+                    version "0.2.2"
 
                     developers {
                         developer {

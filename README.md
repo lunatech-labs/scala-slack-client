@@ -9,7 +9,7 @@ An asynchronous Scala library to interact with the Slack [API](https://api.slack
 Add this dependency in your build.sbt
 
 ```
-libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.2.1"
+libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.2.2"
 ```
 
 ## How to Use
