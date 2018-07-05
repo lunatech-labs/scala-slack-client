@@ -55,20 +55,18 @@ if (isMavenDeployable) {
                     name "scala-slack-client"
                     packaging 'jar'
                     url "https://github.com/lunatech-labs/scala-slack-client"
-                    version "0.1.1"
+                    version "0.2.0"
 
                     developers {
                         developer {
                             id 'kistria'
                             name 'Kévin Istria'
                             email 'kevin.istria@lunatech.com'
-                            organization 'https://www.lunatech.com/'
                         }
                         developer {
                             id 'kherizo'
                             name 'Herizo Kerharo'
                             email 'herizo.kerharo@lunatech.com'
-                            organization 'https://www.lunatech.com/'
                         }
                     }
 
