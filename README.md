@@ -26,6 +26,17 @@ val slackClient = SlackClient(<Bot token>)
 slackClient.postMessage("#general", "Hello, Wold!")
 ```
 
+To process the response of your bot features you can use our Parser.  
+
+SlashCommands :  
+```
+Parser.slashCommand(body: Map[String, Seq[String]]): Try[SlashCommandPayload]
+```
+Interactive Components : 
+```
+Parser.getPayload(body: Map[String, Seq[String]]): Try[Payload]
+```
+
 ## Examples
 
 ### Sending a message
@@ -56,143 +67,143 @@ All methods can be used the same way.
 
 | Method              | Slack API                                             | Version |
 |---------------------|-------------------------------------------------------|---------|
-| userInfo            | https://slack.com/api/users.info                      | 0.1.0   |
-| usersList           | https://slack.com/api/users.list                      | 0.1.0   |
-| userLookupByEmail   | https://slack.com/api/users.lookupByEmail             | 0.1.0   |
-| channelList         | https://slack.com/api/channels.list                   | 0.1.0   |
-| deleteMessage       | https://slack.com/api/chat.delete                     | 0.1.0   |
-| getPermalinkMessage | https://slack.com/api/chat.getPermalink               | 0.1.0   |
-| meMessage           | https://slack.com/api/chat.meMessage                  | 0.1.0   |
-| postEphemeral       | https://slack.com/api/chat.postEphemeral              | 0.1.0   |
-| postMessage         | https://slack.com/api/chat.postMessage                | 0.1.0   |
-| updateMessage       | https://slack.com/api/chat.update                     | 0.1.0   |
-| imClose             | https://slack.com/api/im.close                        | 0.1.0   |
-| openDialog          | https://slack.com/api/dialog.open                     | 0.1.0   |
-| imOpen              | https://slack.com/api/im.open                         | 0.1.0   |
-|                     | https://slack.com/api/chat.unfurl                     |         |
-|                     | https://slack.com/api/api.test                        |         |
-|                     | https://slack.com/api/apps.permissions.info           |         |
-|                     | https://slack.com/api/apps.permissions.request        |         |
-|                     | https://slack.com/api/apps.permissions.resources.list |         |
-|                     | https://slack.com/api/apps.permissions.scopes.list    |         |
-|                     | https://slack.com/api/auth.revoke                     |         |
-|                     | https://slack.com/api/auth.test                       |         |
-|                     | https://slack.com/api/bots.info                       |         |
-|                     | https://slack.com/api/channels.archive                |         |
-|                     | https://slack.com/api/channels.create                 |         |
-|                     | https://slack.com/api/channels.history                |         |
-|                     | https://slack.com/api/channels.info                   |         |
-|                     | https://slack.com/api/channels.invite                 |         |
-|                     | https://slack.com/api/channels.join                   |         |
-|                     | https://slack.com/api/channels.kick                   |         |
-|                     | https://slack.com/api/channels.leave                  |         |
-|                     | https://slack.com/api/channels.mark                   |         |
-|                     | https://slack.com/api/channels.rename                 |         |
-|                     | https://slack.com/api/channels.replies                |         |
-|                     | https://slack.com/api/channels.setPurpose             |         |
-|                     | https://slack.com/api/channels.setTopic               |         |
-|                     | https://slack.com/api/channels.unarchive              |         |
-|                     | https://slack.com/api/conversations.archive           |         |
-|                     | https://slack.com/api/conversations.create            |         |
-|                     | https://slack.com/api/conversations.history           |         |
-|                     | https://slack.com/api/conversations.info              |         |
-|                     | https://slack.com/api/conversations.invite            |         |
-|                     | https://slack.com/api/conversations.join              |         |
-|                     | https://slack.com/api/conversations.kick              |         |
-|                     | https://slack.com/api/conversations.leave             |         |
-|                     | https://slack.com/api/conversations.list              |         |
-|                     | https://slack.com/api/conversations.members           |         |
-|                     | https://slack.com/api/conversations.open              |         |
-|                     | https://slack.com/api/conversations.rename            |         |
-|                     | https://slack.com/api/conversations.replies           |         |
-|                     | https://slack.com/api/cconversations.setPurpose       |         |
-|                     | https://slack.com/api/conversations.setTopic          |         |
-|                     | https://slack.com/api/conversations.unarchive         |         |
-|                     | https://slack.com/api/dnd.endDnd                      |         |
-|                     | https://slack.com/api/dnd.endSnooze                   |         |
-|                     | https://slack.com/api/dnd.info                        |         |
-|                     | https://slack.com/api/dnd.setSnooze                   |         |
-|                     | https://slack.com/api/dnd.teamInfo                    |         |
-|                     | https://slack.com/api/emoji.list                      |         |
-|                     | https://slack.com/api/files.comments.add              |         |
-|                     | https://slack.com/api/files.comments.delete           |         |
-|                     | https://slack.com/api/files.comments.edit             |         |
-|                     | https://slack.com/api/files.delete                    |         |
-|                     | https://slack.com/api/files.info                      |         |
-|                     | https://slack.com/api/files.list                      |         |
-|                     | https://slack.com/api/files.revokePublicURL           |         |
-|                     | https://slack.com/api/files.sharedPublicURL           |         |
-|                     | https://slack.com/api/files.upload                    |         |
-|                     | https://slack.com/api/groups.archive                  |         |
-|                     | https://slack.com/api/groups.create                   |         |
-|                     | https://slack.com/api/groups.createChild              |         |
-|                     | https://slack.com/api/groups.history                  |         |
-|                     | https://slack.com/api/groups.info                     |         |
-|                     | https://slack.com/api/groups.invite                   |         |
-|                     | https://slack.com/api/groups.kick                     |         |
-|                     | https://slack.com/api/groups.leave                    |         |
-|                     | https://slack.com/api/groups.list                     |         |
-|                     | https://slack.com/api/groups.mark                     |         |
-|                     | https://slack.com/api/groups.open                     |         |
-|                     | https://slack.com/api/groups.rename                   |         |
-|                     | https://slack.com/api/groups.replies                  |         |
-|                     | https://slack.com/api/groups.setPurpose               |         |
-|                     | https://slack.com/api/groups.setTopic                 |         |
-|                     | https://slack.com/api/groups.unarchive                |         |
-|                     | https://slack.com/api/im.history                      |         |
-|                     | https://slack.com/api/im.list                         |         |
-|                     | https://slack.com/api/im.mark                         |         |
-|                     | https://slack.com/api/im.replies                      |         |
-|                     | https://slack.com/api/migration.exchange              |         |
-|                     | https://slack.com/api/mpim.close                      |         |
-|                     | https://slack.com/api/mpim.history                    |         |
-|                     | https://slack.com/api/mpim.list                       |         |
-|                     | https://slack.com/api/mpim.mark                       |         |
-|                     | https://slack.com/api/mpim.open                       |         |
-|                     | https://slack.com/api/mpim.replies                    |         |
-|                     | https://slack.com/api/oauth.access                    |         |
-|                     | https://slack.com/api/oauth.token                     |         |
-|                     | https://slack.com/api/pins.add                        |         |
-|                     | https://slack.com/api/pins.list                       |         |
-|                     | https://slack.com/api/pins.remove                     |         |
-|                     | https://slack.com/api/reactions.add                   |         |
-|                     | https://slack.com/api/reactions.get                   |         |
-|                     | https://slack.com/api/reactions.list                  |         |
-|                     | https://slack.com/api/reactions.remove                |         |
-|                     | https://slack.com/api/reminders.add                   |         |
-|                     | https://slack.com/api/reminders.complete              |         |
-|                     | https://slack.com/api/reminders.delete                |         |
-|                     | https://slack.com/api/reminders.info                  |         |
-|                     | https://slack.com/api/reminders.list                  |         |
-|                     | https://slack.com/api/rtm.connect                     |         |
-|                     | https://slack.com/api/rtm.start                       |         |
-|                     | https://slack.com/api/search.all                      |         |
-|                     | https://slack.com/api/search.files                    |         |
-|                     | https://slack.com/api/search.messages                 |         |
-|                     | https://slack.com/api/stars.add                       |         |
-|                     | https://slack.com/api/stars.list                      |         |
-|                     | https://slack.com/api/stars.remove                    |         |
-|                     | https://slack.com/api/team.accessLogs                 |         |
-|                     | https://slack.com/api/team.billableInfo               |         |
-|                     | https://slack.com/api/team.info                       |         |
-|                     | https://slack.com/api/team.integrationLogs            |         |
-|                     | https://slack.com/api/team.profile.get                |         |
-|                     | https://slack.com/api/usergroups.create               |         |
-|                     | https://slack.com/api/usergroups.disable              |         |
-|                     | https://slack.com/api/usergroups.enable               |         |
-|                     | https://slack.com/api/usergroups.list                 |         |
-|                     | https://slack.com/api/usergroups.update               |         |
-|                     | https://slack.com/api/usergroups.users.list           |         |
-|                     | https://slack.com/api/usergroups.users.update         |         |
-|                     | https://slack.com/api/users.conversations             |         |
-|                     | https://slack.com/api/users.deletePhoto               |         |
-|                     | https://slack.com/api/users.getPresence               |         |
-|                     | https://slack.com/api/users.identity                  |         |
-|                     | https://slack.com/api/users.setActive                 |         |
-|                     | https://slack.com/api/users.setPhoto                  |         |
-|                     | https://slack.com/api/users.setPresence               |         |
-|                     | https://slack.com/api/users.profile.get               |         |
-|                     | https://slack.com/api/users.profile.set               |         | 
+| userInfo            | https://api.slack.com/methods/users.info                      | 0.1.0   |
+| usersList           | https://api.slack.com/methods/users.list                      | 0.1.0   |
+| userLookupByEmail   | https://api.slack.com/methods/users.lookupByEmail             | 0.1.0   |
+| channelList         | https://api.slack.com/methods/channels.list                   | 0.1.0   |
+| deleteMessage       | https://api.slack.com/methods/chat.delete                     | 0.1.0   |
+| getPermalinkMessage | https://api.slack.com/methods/chat.getPermalink               | 0.1.0   |
+| meMessage           | https://api.slack.com/methods/chat.meMessage                  | 0.1.0   |
+| postEphemeral       | https://api.slack.com/methods/chat.postEphemeral              | 0.1.0   |
+| postMessage         | https://api.slack.com/methods/chat.postMessage                | 0.1.0   |
+| updateMessage       | https://api.slack.com/methods/chat.update                     | 0.1.0   |
+| imClose             | https://api.slack.com/methods/im.close                        | 0.1.0   |
+| openDialog          | https://api.slack.com/methods/dialog.open                     | 0.1.0   |
+| imOpen              | https://api.slack.com/methods/im.open                         | 0.1.0   |
+|                     | https://api.slack.com/methods/chat.unfurl                     |         |
+|                     | https://api.slack.com/methods/api.test                        |         |
+|                     | https://api.slack.com/methods/apps.permissions.info           |         |
+|                     | https://api.slack.com/methods/apps.permissions.request        |         |
+|                     | https://api.slack.com/methods/apps.permissions.resources.list |         |
+|                     | https://api.slack.com/methods/apps.permissions.scopes.list    |         |
+|                     | https://api.slack.com/methods/auth.revoke                     |         |
+|                     | https://api.slack.com/methods/auth.test                       |         |
+|                     | https://api.slack.com/methods/bots.info                       |         |
+|                     | https://api.slack.com/methods/channels.archive                |         |
+|                     | https://api.slack.com/methods/channels.create                 |         |
+|                     | https://api.slack.com/methods/channels.history                |         |
+|                     | https://api.slack.com/methods/channels.info                   |         |
+|                     | https://api.slack.com/methods/channels.invite                 |         |
+|                     | https://api.slack.com/methods/channels.join                   |         |
+|                     | https://api.slack.com/methods/channels.kick                   |         |
+|                     | https://api.slack.com/methods/channels.leave                  |         |
+|                     | https://api.slack.com/methods/channels.mark                   |         |
+|                     | https://api.slack.com/methods/channels.rename                 |         |
+|                     | https://api.slack.com/methods/channels.replies                |         |
+|                     | https://api.slack.com/methods/channels.setPurpose             |         |
+|                     | https://api.slack.com/methods/channels.setTopic               |         |
+|                     | https://api.slack.com/methods/channels.unarchive              |         |
+|                     | https://api.slack.com/methods/conversations.archive           |         |
+|                     | https://api.slack.com/methods/conversations.create            |         |
+|                     | https://api.slack.com/methods/conversations.history           |         |
+|                     | https://api.slack.com/methods/conversations.info              |         |
+|                     | https://api.slack.com/methods/conversations.invite            |         |
+|                     | https://api.slack.com/methods/conversations.join              |         |
+|                     | https://api.slack.com/methods/conversations.kick              |         |
+|                     | https://api.slack.com/methods/conversations.leave             |         |
+|                     | https://api.slack.com/methods/conversations.list              |         |
+|                     | https://api.slack.com/methods/conversations.members           |         |
+|                     | https://api.slack.com/methods/conversations.open              |         |
+|                     | https://api.slack.com/methods/conversations.rename            |         |
+|                     | https://api.slack.com/methods/conversations.replies           |         |
+|                     | https://api.slack.com/methods/cconversations.setPurpose       |         |
+|                     | https://api.slack.com/methods/conversations.setTopic          |         |
+|                     | https://api.slack.com/methods/conversations.unarchive         |         |
+|                     | https://api.slack.com/methods/dnd.endDnd                      |         |
+|                     | https://api.slack.com/methods/dnd.endSnooze                   |         |
+|                     | https://api.slack.com/methods/dnd.info                        |         |
+|                     | https://api.slack.com/methods/dnd.setSnooze                   |         |
+|                     | https://api.slack.com/methods/dnd.teamInfo                    |         |
+|                     | https://api.slack.com/methods/emoji.list                      |         |
+|                     | https://api.slack.com/methods/files.comments.add              |         |
+|                     | https://api.slack.com/methods/files.comments.delete           |         |
+|                     | https://api.slack.com/methods/files.comments.edit             |         |
+|                     | https://api.slack.com/methods/files.delete                    |         |
+|                     | https://api.slack.com/methods/files.info                      |         |
+|                     | https://api.slack.com/methods/files.list                      |         |
+|                     | https://api.slack.com/methods/files.revokePublicURL           |         |
+|                     | https://api.slack.com/methods/files.sharedPublicURL           |         |
+|                     | https://api.slack.com/methods/files.upload                    |         |
+|                     | https://api.slack.com/methods/groups.archive                  |         |
+|                     | https://api.slack.com/methods/groups.create                   |         |
+|                     | https://api.slack.com/methods/groups.createChild              |         |
+|                     | https://api.slack.com/methods/groups.history                  |         |
+|                     | https://api.slack.com/methods/groups.info                     |         |
+|                     | https://api.slack.com/methods/groups.invite                   |         |
+|                     | https://api.slack.com/methods/groups.kick                     |         |
+|                     | https://api.slack.com/methods/groups.leave                    |         |
+|                     | https://api.slack.com/methods/groups.list                     |         |
+|                     | https://api.slack.com/methods/groups.mark                     |         |
+|                     | https://api.slack.com/methods/groups.open                     |         |
+|                     | https://api.slack.com/methods/groups.rename                   |         |
+|                     | https://api.slack.com/methods/groups.replies                  |         |
+|                     | https://api.slack.com/methods/groups.setPurpose               |         |
+|                     | https://api.slack.com/methods/groups.setTopic                 |         |
+|                     | https://api.slack.com/methods/groups.unarchive                |         |
+|                     | https://api.slack.com/methods/im.history                      |         |
+|                     | https://api.slack.com/methods/im.list                         |         |
+|                     | https://api.slack.com/methods/im.mark                         |         |
+|                     | https://api.slack.com/methods/im.replies                      |         |
+|                     | https://api.slack.com/methods/migration.exchange              |         |
+|                     | https://api.slack.com/methods/mpim.close                      |         |
+|                     | https://api.slack.com/methods/mpim.history                    |         |
+|                     | https://api.slack.com/methods/mpim.list                       |         |
+|                     | https://api.slack.com/methods/mpim.mark                       |         |
+|                     | https://api.slack.com/methods/mpim.open                       |         |
+|                     | https://api.slack.com/methods/mpim.replies                    |         |
+|                     | https://api.slack.com/methods/oauth.access                    |         |
+|                     | https://api.slack.com/methods/oauth.token                     |         |
+|                     | https://api.slack.com/methods/pins.add                        |         |
+|                     | https://api.slack.com/methods/pins.list                       |         |
+|                     | https://api.slack.com/methods/pins.remove                     |         |
+|                     | https://api.slack.com/methods/reactions.add                   |         |
+|                     | https://api.slack.com/methods/reactions.get                   |         |
+|                     | https://api.slack.com/methods/reactions.list                  |         |
+|                     | https://api.slack.com/methods/reactions.remove                |         |
+|                     | https://api.slack.com/methods/reminders.add                   |         |
+|                     | https://api.slack.com/methods/reminders.complete              |         |
+|                     | https://api.slack.com/methods/reminders.delete                |         |
+|                     | https://api.slack.com/methods/reminders.info                  |         |
+|                     | https://api.slack.com/methods/reminders.list                  |         |
+|                     | https://api.slack.com/methods/rtm.connect                     |         |
+|                     | https://api.slack.com/methods/rtm.start                       |         |
+|                     | https://api.slack.com/methods/search.all                      |         |
+|                     | https://api.slack.com/methods/search.files                    |         |
+|                     | https://api.slack.com/methods/search.messages                 |         |
+|                     | https://api.slack.com/methods/stars.add                       |         |
+|                     | https://api.slack.com/methods/stars.list                      |         |
+|                     | https://api.slack.com/methods/stars.remove                    |         |
+|                     | https://api.slack.com/methods/team.accessLogs                 |         |
+|                     | https://api.slack.com/methods/team.billableInfo               |         |
+|                     | https://api.slack.com/methods/team.info                       |         |
+|                     | https://api.slack.com/methods/team.integrationLogs            |         |
+|                     | https://api.slack.com/methods/team.profile.get                |         |
+|                     | https://api.slack.com/methods/usergroups.create               |         |
+|                     | https://api.slack.com/methods/usergroups.disable              |         |
+|                     | https://api.slack.com/methods/usergroups.enable               |         |
+|                     | https://api.slack.com/methods/usergroups.list                 |         |
+|                     | https://api.slack.com/methods/usergroups.update               |         |
+|                     | https://api.slack.com/methods/usergroups.users.list           |         |
+|                     | https://api.slack.com/methods/usergroups.users.update         |         |
+|                     | https://api.slack.com/methods/users.conversations             |         |
+|                     | https://api.slack.com/methods/users.deletePhoto               |         |
+|                     | https://api.slack.com/methods/users.getPresence               |         |
+|                     | https://api.slack.com/methods/users.identity                  |         |
+|                     | https://api.slack.com/methods/users.setActive                 |         |
+|                     | https://api.slack.com/methods/users.setPhoto                  |         |
+|                     | https://api.slack.com/methods/users.setPresence               |         |
+|                     | https://api.slack.com/methods/users.profile.get               |         |
+|                     | https://api.slack.com/methods/users.profile.set               |         | 
 
 ## License
 
