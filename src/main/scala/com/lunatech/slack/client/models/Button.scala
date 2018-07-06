@@ -1,4 +1,5 @@
 package com.lunatech.slack.client.models
+
 import play.api.libs.json._
 
 
@@ -12,7 +13,10 @@ case class Button(
 ) extends ActionField {
   val `type` = "button"
 
-  def withConfirmation(confirmField: ConfirmField): Button = copy(confirm = Some(confirmField))
+  def withConfirmation(text: String,
+    title: Option[String] = None,
+    ok_text: Option[String] = None,
+    dismiss_text: Option[String] = None): Button = copy(confirm = Some(ConfirmField(text, title, ok_text, dismiss_text)))
 
   def withId(id: String): Button = copy(id = Some(id))
 

@@ -11,7 +11,7 @@ class ActionFieldTest extends FlatSpec {
   it should "parse a button to json correctly" in {
     val button: ActionField = Button("Default button", "button").withId("d_button").withValue("v")
     val primaryButton: ActionField = Button("Primary button", "p_button").asPrimaryButton
-    val dangerButton: ActionField = Button("Danger button", "d_button").asDangerButton.withConfirmation(ConfirmField("Are you sure ?"))
+    val dangerButton: ActionField = Button("Danger button", "d_button").asDangerButton.withConfirmation("Are you sure ?")
 
     val buttonJson = Json.obj(
       "name" -> "Default button",
@@ -85,7 +85,7 @@ class ActionFieldTest extends FlatSpec {
     }
 
     val dangerButton: JsResult[ActionField] = Json.fromJson[ActionField](dangerButtonJson)
-    val dangerButtonExpected: ActionField = Button("Danger button", "d_button").asDangerButton.withConfirmation(ConfirmField("Are you sure ?"))
+    val dangerButtonExpected: ActionField = Button("Danger button", "d_button").asDangerButton.withConfirmation("Are you sure ?")
 
     dangerButton match {
       case JsSuccess(s: Button, _) =>

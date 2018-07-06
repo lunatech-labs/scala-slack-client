@@ -17,7 +17,9 @@ case class Payload(
   is_app_unfurl: Option[Boolean],
   original_message: Option[Message],
   response_url: Option[String],
-  trigger_id: Option[String]
+  trigger_id: Option[String],
+  name: Option[String],
+  value: Option[String]
 )
 
 case class Message(

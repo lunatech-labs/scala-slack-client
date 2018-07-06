@@ -12,6 +12,8 @@ class PayloadParserTest extends FlatSpec {
     payload.get.actions.get.head.name shouldBe "latest_request"
     payload.get.actions.get.head.`type` shouldBe "button"
     payload.get.callback_id shouldBe "callback"
+    payload.get.name.get shouldBe "nametest"
+    payload.get.value.get shouldBe "valuetest"
     payload.get.team.id shouldBe "TB6N9RP9U"
     payload.get.team.domain shouldBe "testdomain"
     payload.get.channel.id shouldBe "DB59Q4M7B"
@@ -23,7 +25,7 @@ class PayloadParserTest extends FlatSpec {
     payload.get.attachment_id.get shouldBe "1"
     payload.get.token shouldBe "tokentest"
     payload.get.is_app_unfurl.get shouldBe false
-    payload.get.response_url shouldBe "responsetest"
+    payload.get.response_url.get shouldBe "responsetest"
     payload.get.trigger_id.get shouldBe "triggertest"
   }
 
@@ -33,6 +35,8 @@ class PayloadParserTest extends FlatSpec {
       | "type": "interactive_message",
       | "actions": [{"name": "latest_request", "type": "button"}],
       | "callback_id": "callback",
+      | "name": "nametest",
+      | "value": "valuetest",
       | "team": {"id": "TB6N9RP9U", "domain": "testdomain"},
       | "channel": {"id": "DB59Q4M7B", "name": "directmessage"},
       | "user": {"id": "userid", "name": "username"},

@@ -53,7 +53,7 @@ class ClientTest extends FunSuite {
     val attachment = AttachmentField("upgrade your client api", "action_test")
       .addAction(Button("Default button", "Default"))
       .addAction(Button("Primary button", "Primary").asPrimaryButton)
-      .addAction(Button("Danger button", "Danger").asDangerButton.withConfirmation(ConfirmField("Are you sure")))
+      .addAction(Button("Danger button", "Danger").asDangerButton.withConfirmation("Are you sure"))
 
     val chatMessage = ChatMessage(channel, "This is a message with buttons").addAttachment(attachment)
 
@@ -74,7 +74,7 @@ class ClientTest extends FunSuite {
       Some(List(StaticMenu("Menu", "The menu")
         .addOption("First item", "First item")
         .addOption("Second Item", "Second Item")
-        .withConfirmation(ConfirmField("Are you sure ?"))))
+        .withConfirmation("Are you sure ?")))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu").addAttachment(attachment)

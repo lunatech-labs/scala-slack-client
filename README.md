@@ -9,7 +9,7 @@ An asynchronous Scala library to interact with the Slack [API](https://api.slack
 Add this dependency in your build.sbt
 
 ```
-libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.2.2"
+libraryDependencies += "com.lunatech" % "scala-slack-client" % "0.2.3"
 ```
 
 ## How to Use
@@ -55,7 +55,7 @@ val message = ChatMessage(channel = "#general", text = "this is a message with C
       .addAttachment(AttachmentField(fallback = "update your API", callback_id = "buttons")
         .addAction(Button(name = "PrimaryButton", text = "Primary button").asPrimaryButton))
         .addAction(Button(name = "DefaultButton", text = "Default button"))
-        .addAction(Button(name = "DangerButton", text = "DangerButton").asDangerButton.withConfirmation(ConfirmField("Are you sure")))
+        .addAction(Button(name = "DangerButton", text = "DangerButton").asDangerButton.withConfirmation("Are you sure"))
         .withPretext("Click one of these button")
       )
 

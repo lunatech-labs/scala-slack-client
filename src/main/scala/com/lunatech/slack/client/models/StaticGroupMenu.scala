@@ -10,7 +10,11 @@ case class StaticGroupMenu(
   option_groups: Option[Seq[OptionGroupsField]] = None,
   selected_options: Option[Seq[BasicField]] = None
 ) extends Menu {
-  def withConfirmation(confirmField: ConfirmField): StaticGroupMenu = copy(confirm = Some(confirmField))
+
+  def withConfirmation(text: String,
+    title: Option[String] = None,
+    ok_text: Option[String] = None,
+    dismiss_text: Option[String] = None): StaticGroupMenu = copy(confirm = Some(ConfirmField(text, title, ok_text, dismiss_text)))
 
   def withId(id: String): StaticGroupMenu = copy(id = Some(id))
 

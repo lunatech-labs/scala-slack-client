@@ -21,7 +21,10 @@ case class DynamicMenu(
   min_query_length: Option[Int] = None
 ) extends Menu {
 
-  def withConfirmation(confirmField: ConfirmField): DynamicMenu = copy(confirm = Some(confirmField))
+  def withConfirmation(text: String,
+    title: Option[String] = None,
+    ok_text: Option[String] = None,
+    dismiss_text: Option[String] = None): DynamicMenu = copy(confirm = Some(ConfirmField(text, title, ok_text, dismiss_text)))
 
   def withId(id: String): DynamicMenu = copy(id = Some(id))
 
