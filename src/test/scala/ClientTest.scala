@@ -116,7 +116,7 @@ class ClientTest extends FunSuite {
 
   test("Slack client should send a message to a channel with a menu listing conversations") {
     val attachment = AttachmentField("upgrade your client api", "action_test",
-      Some(List(DynamicMenu("Channels menu", "Converations", DataSource.conversation)))
+      Some(List(DynamicMenu("Channels menu", "Converations", DataSource.conversations)))
     )
 
     val chatMessage = ChatMessage(channel, "This is a message with a menu listing converations").addAttachment(attachment)

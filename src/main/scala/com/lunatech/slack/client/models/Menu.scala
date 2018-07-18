@@ -12,7 +12,7 @@ object Menu {
   implicit val reads: Reads[Menu] = json =>
     (json \ "type").validate[String] match {
       case JsSuccess("select", _) => (json \ "data_source").validate[String] match {
-        case JsSuccess(_, _) => DynamicMenu.reads.reads(json)
+        case JsSuccess(value, _) if value != "static" => DynamicMenu.reads.reads(json)
         // The field data_source is not present so it must be either a StaticMenu or a StaticGroupMeu
         case JsError(_) => (json \ "options").validate[Seq[BasicField]] match {
           case JsSuccess(_, _) => StaticMenu.reads.reads(json)

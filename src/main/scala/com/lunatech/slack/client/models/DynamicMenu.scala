@@ -5,7 +5,7 @@ import play.api.libs.json._
 
 object DataSource extends Enumeration {
   type DataSource = Value
-  val users, channels, external, conversation = Value
+  val users, channels, external, conversations = Value
 
   implicit val read: Reads[DataSource] = Reads.enumNameReads(DataSource)
   implicit val write: Writes[DataSource] = Writes.enumNameWrites
